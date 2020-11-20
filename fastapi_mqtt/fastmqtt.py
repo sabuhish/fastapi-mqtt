@@ -6,7 +6,9 @@ from ssl import SSLContext
 from gmqtt.mqtt.constants import MQTTv311,MQTTv50
 from .config import MQQTConfig
 import uuid
-
+from functools import partial
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 
 class FastMQTT:
@@ -14,7 +16,7 @@ class FastMQTT:
         self,
         config: MQQTConfig,  
         *, 
-        client_id:  Optional[Type[Any]] = None,
+        client_id:  Optional[Type[str]] = None,
         clean_session: bool = True, 
         optimistic_acknowledgement: bool = True,
         will_message: str = None, 
@@ -48,31 +50,32 @@ class FastMQTT:
         self.client: MQTTClient = MQTTClient(client_id)
         self.config: Dict[Any,Any] = config
 
-        self.client._clean_session: bool = True
-        self.client._username: Optional[str] = config.get("username") if  config.get("username") else None
-        self.client._password: Optional[str] = config.get("password") if  config.get("password") else None
-        self.client._host: str =  config.get("localhost")
-        self.client._port: int =  config.get("port")
-        self.client._keepalive: int = config.get("keepalive")
+        self.client._clean_session = clean_session
+        self.client._username: Optional[str] = config.username or None
+        self.client._password: Optional[str] = config.password or None
+        self.client._host: str =  config.host
+        self.client._port: int =  config.port
+        self.client._keepalive: int = config.keepalive
         
-        self.client._ssl: Union[bool,SSLContext]  =  config.get("ssl")
+        self.client._ssl: Union[bool,SSLContext]  =  config.ssl
 
         self.client.optimistic_acknowledgement: bool = optimistic_acknowledgement
         self.client._connect_properties: Any = kwargs
 
         self.client._will_message: str = will_message
     
+        self.executor = ThreadPoolExecutor()
 
 
     async def connection(self) -> None:
         
-        if self.client._username and self.client._password:
+        if self.client._username:
          
-            self.client.set_auth_credentials(self.client._password, self.client._password)
+            self.client.set_auth_credentials(self.client._username, self.client._password)
 
         await self.set_connetion_config()
 
-        version = self.config.get("version") if self.config.get("version") else  MQTTv50
+        version = self.config.version or MQTTv50
 
         await self.client.connect(self.client._host,self.client._port,self.client._ssl,self.client._keepalive,version)
 
@@ -84,11 +87,11 @@ class FastMQTT:
         # For more info: # https://github.com/wialon/gmqtt#reconnects
 
 
-        if self.config.get("reconnect_retries"):
-            self.client.set_config(reconnect_retries=self.config.get("reconnect_retries"))
+        if self.config.reconnect_retries:
+            self.client.set_config(reconnect_retries=self.config.reconnect_retries)
            
-        if self.config.get("reconnect_delay"):
-            self.client.set_config(reconnect_delay=self.config.get("reconnect_delay"))
+        if self.config.reconnect_delay:
+            self.client.set_config(reconnect_delay=self.config.reconnect_delay)
 
     def on_message(self):
 
@@ -104,10 +107,14 @@ class FastMQTT:
         return message_handler
 
 
-    async def publish(self):
-        pass
+    async def publish(self, message_or_topic, payload=None, qos=0, retain=False, **kwargs):
+        loop = asyncio.get_event_loop()
 
-    def unsubscribe(self,topic: str,**kwargs):
+        func = partial(self.client.publish, message_or_topic, payload=None, qos=0, retain=False, **kwargs)
+        return await loop.run_in_executor(self.executor, func)
+
+
+    def unsubscribe(self, topic: str, **kwargs):
         
        return self.client._connection.unsubscribe(topic, **kwargs)
     
