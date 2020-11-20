@@ -1,5 +1,6 @@
 
 from pydantic import  BaseSettings
+from gmqtt.mqtt.constants import MQTTv50
 
 
 class MQQTConfig(BaseSettings):
