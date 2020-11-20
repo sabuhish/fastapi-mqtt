@@ -9,7 +9,10 @@ from fastapi_mqtt.config import MQQTConfig
 mqtt_config = MQQTConfig()
 
 fast_mqtt = FastMQTT(
-    config=mqtt_config
+    config=mqtt_config,
+    topic="/TEST/WILL",
+    payload="THIS PROCESS DEAD",
+    will_delay_interval=2
 )
 
 
@@ -23,8 +26,9 @@ async def startapp():
 
 @fast_mqtt.on_connect()
 def connect(client, flags, rc, properties):
-    fast_mqtt.client.subscribe("/hello")
-    print("Connected1: ", client, flags, rc, properties)
+    fast_mqtt.client.subscribe("/last-will")
+    fast_mqtt.client.subscribe("/#")
+    print("Connected: ", client, flags, rc, properties)
 
 
 @fast_mqtt.on_message()
@@ -38,7 +42,7 @@ def disconnect(client, packet, exc=None):
 
 @fast_mqtt.on_subscribe()
 def subscribe(client, mid, qos, properties):
-    print("SUBSCRIBE", client, mid, qos, properties)
+    print("SUBSCRIBED", client, mid, qos, properties)
 
 @app.get("/")
 async def home():

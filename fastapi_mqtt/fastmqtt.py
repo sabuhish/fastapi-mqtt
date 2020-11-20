@@ -1,5 +1,6 @@
 
 from gmqtt import Client as MQTTClient
+from gmqtt import Message
 from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
 import ssl
 from ssl import SSLContext
@@ -19,7 +20,9 @@ class FastMQTT:
         client_id:  Optional[Type[str]] = None,
         clean_session: bool = True, 
         optimistic_acknowledgement: bool = True,
-        will_message: str = None, 
+        topic: str = None, # Topic where will_message will send payload
+        payload: str = None, # will_message payload to send 
+        will_delay_interval: int = 10, # will_message delay interval
         **kwargs: Any
     ) -> None:
 
@@ -56,16 +59,13 @@ class FastMQTT:
         self.client._host: str =  config.host
         self.client._port: int =  config.port
         self.client._keepalive: int = config.keepalive
-        
         self.client._ssl: Union[bool,SSLContext]  =  config.ssl
-
         self.client.optimistic_acknowledgement: bool = optimistic_acknowledgement
         self.client._connect_properties: Any = kwargs
-
-        self.client._will_message: str = will_message
-    
         self.executor = ThreadPoolExecutor()
 
+        if topic and payload:
+            self.client._will_message = Message(topic, payload, will_delay_interval=will_delay_interval)
 
     async def connection(self) -> None:
         
@@ -94,7 +94,6 @@ class FastMQTT:
             self.client.set_config(reconnect_delay=self.config.reconnect_delay)
 
     def on_message(self):
-
         """
         Decarator method used to subscirbe messages from all topics.
         """
@@ -109,20 +108,16 @@ class FastMQTT:
 
     async def publish(self, message_or_topic, payload=None, qos=0, retain=False, **kwargs):
         loop = asyncio.get_event_loop()
-
         func = partial(self.client.publish, message_or_topic, payload=None, qos=0, retain=False, **kwargs)
         return await loop.run_in_executor(self.executor, func)
 
 
     def unsubscribe(self, topic: str, **kwargs):
-        
        return self.client._connection.unsubscribe(topic, **kwargs)
     
     def on_connect(self):
-
         """
         Decarator method used to handle connection to MQTT.
-
         """
         def connect_handler(handler: Callable) -> Callable:
             self.client.on_connect = handler
@@ -138,13 +133,10 @@ class FastMQTT:
     def on_subscribe(self):
         """
         Decarator method used to obtain subscibred topics and properties.
-
         """
 
         def subscribe_handler(handler: Callable):
-            
             self.client.on_subscribe = handler
-            
             return handler
 
         return subscribe_handler
