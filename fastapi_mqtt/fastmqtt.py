@@ -63,6 +63,7 @@ class FastMQTT:
         self.client.optimistic_acknowledgement: bool = optimistic_acknowledgement
         self.client._connect_properties: Any = kwargs
         self.executor = ThreadPoolExecutor()
+        self.loop = asyncio.get_event_loop()
 
         if topic and payload:
             self.client._will_message = Message(topic, payload, will_delay_interval=will_delay_interval)
@@ -73,20 +74,20 @@ class FastMQTT:
          
             self.client.set_auth_credentials(self.client._username, self.client._password)
 
-        await self.set_connetion_config()
+        await self.__set_connetion_config()
 
         version = self.config.version or MQTTv50
 
         await self.client.connect(self.client._host,self.client._port,self.client._ssl,self.client._keepalive,version)
 
 
-    async def set_connetion_config(self) -> None:
-        #  By default, connected MQTT client will always try to reconnect in case of lost connections. 
-        # Number of reconnect attempts is unlimited. If you want to change this behaviour 
-        # pass reconnect_retries and reconnect_delay with its values. 
-        # For more info: # https://github.com/wialon/gmqtt#reconnects
-
-
+    async def __set_connetion_config(self) -> None:
+        '''
+            By default, connected MQTT client will always try to reconnect in case of lost connections. 
+            Number of reconnect attempts is unlimited. If you want to change this behaviour ass reconnect_retries and reconnect_delay with its values. 
+            For more info: # https://github.com/wialon/gmqtt#reconnects
+        '''
+       
         if self.config.reconnect_retries:
             self.client.set_config(reconnect_retries=self.config.reconnect_retries)
            
@@ -107,13 +108,42 @@ class FastMQTT:
 
 
     async def publish(self, message_or_topic, payload=None, qos=0, retain=False, **kwargs):
+
         loop = asyncio.get_event_loop()
         func = partial(self.client.publish, message_or_topic, payload=None, qos=0, retain=False, **kwargs)
         return await loop.run_in_executor(self.executor, func)
+        '''
+            publish method
+        
+            param :: message_or_topic : 
+            type  :: message_or_topic: 
+        
+            param :: payload : 
+            type  :: payload: 
 
+            param :: qos : 
+            type  :: qos:  
+            
+            param :: retain : 
+            type  :: retain:  
+        '''
+
+        func = partial(self.client.publish, message_or_topic, payload, qos, retain, **kwargs)
+        return await self.loop.run_in_executor(self.executor, func)
+
+    async def unsubscribe(self, topic: str, **kwargs):
+
+        '''
+            unsubscribe method
 
     def unsubscribe(self, topic: str, **kwargs):
        return self.client._connection.unsubscribe(topic, **kwargs)
+            param :: retain : 
+            type  :: retain:  
+        '''
+
+        func = partial(self.client.unsubscribe, topic, **kwargs)
+        return await self.loop.run_in_executor(self.executor, func)
     
     def on_connect(self):
         """
@@ -125,9 +155,6 @@ class FastMQTT:
             return handler
 
         return connect_handler
-
-    async def subscribe(self):
-        pass
     
     
     def on_subscribe(self):
