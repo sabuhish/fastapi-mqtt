@@ -1,51 +1,11 @@
 
 from gmqtt import Client as MQTTClient
 from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
-from pydantic import  BaseSettings
 import ssl
 from ssl import SSLContext
 from gmqtt.mqtt.constants import MQTTv311,MQTTv50
+from .config import MQQTConfig
 import uuid
-
-
-
-class MQQTConfig(BaseSettings):
-    
-    '''
-    MQQTConfig is main the configuration to be passsed client object.
-
-    host : To connect MQQT broker, defaults to localhost
-    port : To connect MQQT broker, defaults to 1883
-
-    ssl : if given and not false, a SSL/TLS transport is created (by default a plain TCP transport is created)
-        If ssl is a ssl.SSLContext object, this context is used to create the transport; if ssl is True, a default context returned from ssl.create_default_context() is used.
-
-    keepalive : Maximum period in seconds between communications with the broker. 
-        If no other messages are being exchanged, this controls the rate at which
-        the client will send ping messages to the broker the keepalive timeout value for the client. Defaults to 60 seconds.
-
-    username : username for authentication, defaults to None
-    password : password for authentication, defaults to None
-
-    version : MQTT broker version to use, defaults to  MQTTv50. 
-        According to gmqtt.Client if your broker does not support 5.0 protocol version and responds with proper CONNACK reason code, client will downgrade to 3.1 and reconnect automatically.
-
-    reconnect_retries && reconnect_delay : By default, connected MQTT client will always try to reconnect in case of lost 
-        connections. Number of reconnect attempts is unlimited. 
-        If you want to change this behaviour pass reconnect_retries and reconnect_delay with its values. 
-        For more info: # https://github.com/wialon/gmqtt#reconnects
-   
-    '''
-    host: str = "localhost"
-    port: int = 1883
-    ssl:  bool = False
-    keepalive:  int = 60
-    username: str = None
-    password: str  = None
-    version: int = MQTTv50
-
-    reconnect_retries: int  = None
-    reconnect_delay: int = None
 
 
 
@@ -80,7 +40,6 @@ class FastMQTT:
         type  :: optimistic_acknowledgement: bool
        
         param :: will_message : this message will be published by broker after client disconnects 
-           
         type  :: will_message: str
         '''
 

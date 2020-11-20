@@ -1,0 +1,7 @@
+click==7.1.2
+fastapi==0.61.2
+gmqtt==0.6.8
+h11==0.11.0
+pydantic==1.7.2
+starlette==0.13.6
+uvicorn==0.12.2
