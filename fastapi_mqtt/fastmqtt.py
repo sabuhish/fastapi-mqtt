@@ -102,7 +102,34 @@ class FastMQTT:
         self.client._connect_properties: Any = kwargs
 
         self.client._will_message: str = will_message
+    
 
+
+    async def connection(self) -> None:
+        
+        if self.client._username and self.client._password:
+         
+            self.client.set_auth_credentials(self.client._password, self.client._password)
+
+        await self.set_connetion_config()
+
+        version = self.config.get("version") if self.config.get("version") else  MQTTv50
+
+        await self.client.connect(self.client._host,self.client._port,self.client._ssl,self.client._keepalive,version)
+
+
+    async def set_connetion_config(self) -> None:
+        #  By default, connected MQTT client will always try to reconnect in case of lost connections. 
+        # Number of reconnect attempts is unlimited. If you want to change this behaviour 
+        # pass reconnect_retries and reconnect_delay with its values. 
+        # For more info: # https://github.com/wialon/gmqtt#reconnects
+
+
+        if self.config.get("reconnect_retries"):
+            self.client.set_config(reconnect_retries=self.config.get("reconnect_retries"))
+           
+        if self.config.get("reconnect_delay"):
+            self.client.set_config(reconnect_delay=self.config.get("reconnect_delay"))
 
     def on_message(self):
 
@@ -117,6 +144,14 @@ class FastMQTT:
 
         return message_handler
 
+
+    async def publish(self):
+        pass
+
+    def unsubscribe(self,topic: str,**kwargs):
+        
+       return self.client._connection.unsubscribe(topic, **kwargs)
+    
     def on_connect(self):
 
         """
@@ -130,6 +165,9 @@ class FastMQTT:
 
         return connect_handler
 
+    async def subscribe(self):
+        pass
+    
     
     def on_subscribe(self):
         """
