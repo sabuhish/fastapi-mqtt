@@ -31,7 +31,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         
-        pip install setuptools wheel twine fastapi>=0.61.2  pydantic>=1.7.1 
+        pip install setuptools wheel twine fastapi>=0.61.2 gmqtt>=0.6.8 pydantic>=1.7.1 
         python -c "import sys; print(sys.version)"
         
     - name: Build and publish

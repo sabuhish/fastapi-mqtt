@@ -28,7 +28,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     download_url="https://github.com/sabuhish/fastapi-mqtt",
     classifiers=CLASSIFIERS,
-    python_requires='>=3.6'
+    python_requires='>=3.6',
     project_urls={  
         'Bug Reports': 'https://github.com/sabuhish/fastapi-mqtt/issues',
         'Say Thanks!': 'https://github.com/sabuhish/fastapi-mqtt/graphs/contributors',
