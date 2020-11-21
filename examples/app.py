@@ -30,7 +30,7 @@ def connect(client, flags, rc, properties):
 @fast_mqtt.on_message()
 async def message(client, topic, payload, qos, properties):
     print("Received message: ",topic, payload.decode(), qos, properties)
-
+    return 0
 
 @fast_mqtt.on_disconnect()
 def disconnect(client, packet, exc=None):
