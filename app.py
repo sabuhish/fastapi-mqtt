@@ -25,6 +25,7 @@ executor = ThreadPoolExecutor()
 async def startapp():
     await fast_mqtt.connection()
 
+
 @app.on_event("shutdown")
 async def shutdown():
     await fast_mqtt.client.disconnect()

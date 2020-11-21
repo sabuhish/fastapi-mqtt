@@ -60,7 +60,6 @@ class FastMQTT:
         self.loop = asyncio.get_event_loop()
 
         if self.config.will_message_topic and self.config.will_message_payload and self.config.will_delay_interval:
-            print("WILL MESSAGE INITILAZIED")
             self.client._will_message = Message(
                 self.config.will_message_topic, 
                 self.config.will_message_payload,
