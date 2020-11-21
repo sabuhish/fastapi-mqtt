@@ -5,10 +5,10 @@ Fastapi-mqtt  is the client for working with MQTT.
 
 For more information about MQQT, please refer to here:  [MQTT](MQTT.md)
 
-Fatapi-mqtt wraps around gmqtt module. Gmqtt Python async client for MQTT client implementation. 
+Fatapi-mqtt wraps around  [gmqtt](https://github.com/wialon/gmqtt) module. Gmqtt Python async client for MQTT client implementation. 
 Module has support of MQTT version 5.0 protocol
 
- 
+
 
 [![MIT licensed](https://img.shields.io/github/license/sabuhish/fastapi-mqtt)](https://raw.githubusercontent.com/sabuhish/fastapi-mqtt/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/sabuhish/fastapi-mqtt.svg)](https://github.com/sabuhish/fastapi-mqtt/stargazers)
@@ -91,7 +91,7 @@ async def func():
     return {"result": True,"message":"Published" }
 
 ```
-Subscibre method:
+Subscribe method:
 ```python
 
 @mqtt.on_connect()
@@ -100,7 +100,7 @@ def connect(client, flags, rc, properties):
     print("Connected: ", client, flags, rc, properties)
 
 ```
-Change Connection params
+Changing connection params
 ```python
 mqtt_config = MQQTConfig(host = "mqtt.mosquito.org",
     port= 1883,
@@ -111,7 +111,6 @@ mqtt_config = MQQTConfig(host = "mqtt.mosquito.org",
 
 mqtt = FastMQTT(
     config=mqtt_config)
-
 
 ```
 
