@@ -10,8 +10,10 @@ CLASSIFIERS=[
         "Programming Language :: Python",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-    ],
+        "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+ 
 
 setuptools.setup(
     name="fastapi-mqtt",
