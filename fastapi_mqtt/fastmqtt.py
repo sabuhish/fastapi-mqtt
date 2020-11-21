@@ -38,7 +38,7 @@ class FastMQTT:
             a persistent session or not. In a persistent session clean_session = False, the broker stores all subscriptions for the client and all missed messages for the client that subscribed with a Quality of Service (QoS) level 1 or 2. If the session is not persistent (clean_session = True), the broker does not store anything for the client and purges all information from any previous persistent session. The client_id that the client provides when it establishes connection to the broker identifies the session.
         type  :: clean_session: bool
 
-        param :: optimistic_acknowledgement : 
+        param :: optimistic_acknowledgement :  #TODO more info needed
         type  :: optimistic_acknowledgement: bool
        
         param :: will_message : this message will be published by broker after client disconnects 
