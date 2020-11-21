@@ -3,9 +3,15 @@
 
 name: Python package
 
+# on:
+#   release:
+#     types: [created]
+
+
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -15,7 +21,7 @@ jobs:
       matrix:
         python-version: [3.7]
 
-     steps:
+    steps:
     - uses: actions/checkout@v2
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -32,7 +38,6 @@ jobs:
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-
 
       run: |
         python setup.py sdist bdist_wheel
