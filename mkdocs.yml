@@ -30,6 +30,6 @@ nav:
   - Install: install.md
   - Getting Started: getting-started.md
   - Full Example: example.md
-  - License: license.md
+  # - License: license.md
 
 
