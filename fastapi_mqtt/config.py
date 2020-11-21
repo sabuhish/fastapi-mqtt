@@ -1,10 +1,8 @@
-
 from pydantic import  BaseSettings
 from gmqtt.mqtt.constants import MQTTv50
 
 
 class MQQTConfig(BaseSettings):
-    
     '''
     MQQTConfig is main the configuration to be passsed client object.
 
@@ -28,7 +26,11 @@ class MQQTConfig(BaseSettings):
         connections. Number of reconnect attempts is unlimited. 
         If you want to change this behaviour pass reconnect_retries and reconnect_delay with its values. 
         For more info: # https://github.com/wialon/gmqtt#reconnects
-   
+
+    # Last three parameters is used after client disconnects abnormally
+    param :: will_message_topic : Topic of the payload
+    param :: will_message_payload : The payload
+    param :: will_delay_interval : Delay interval
     '''
     host: str = "localhost"
     port: int = 1883
@@ -40,3 +42,7 @@ class MQQTConfig(BaseSettings):
 
     reconnect_retries: int  = None
     reconnect_delay: int = None
+
+    will_message_topic: str = None 
+    will_message_payload: str = None 
+    will_delay_interval: int = None

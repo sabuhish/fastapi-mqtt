@@ -6,7 +6,11 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 from fastapi_mqtt.config import MQQTConfig
 
-mqtt_config = MQQTConfig()
+mqtt_config = MQQTConfig(
+    will_message_topic = "/TEST/WILL",
+    will_message_payload = "DEADDDD",
+    will_delay_interval = 2
+)
 
 fast_mqtt = FastMQTT(
     config=mqtt_config
@@ -21,8 +25,13 @@ executor = ThreadPoolExecutor()
 async def startapp():
     await fast_mqtt.connection()
 
+@app.on_event("shutdown")
+async def shutdown():
+    await fast_mqtt.client.disconnect()
+
 @fast_mqtt.on_connect()
 def connect(client, flags, rc, properties):
+    fast_mqtt.client.subscribe("/TEST/WILL")
     fast_mqtt.client.subscribe("/hello")
     print("Connected: ", client, flags, rc, properties)
 
@@ -38,7 +47,7 @@ def disconnect(client, packet, exc=None):
 
 @fast_mqtt.on_subscribe()
 def subscribe(client, mid, qos, properties):
-    print("SUBSCRIBE", client, mid, qos, properties)
+    print("SUBSCRIBED", client, mid, qos, properties)
 
 @app.get("/")
 async def home():
