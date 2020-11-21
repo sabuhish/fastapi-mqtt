@@ -20,9 +20,6 @@ class FastMQTT:
         client_id:  Optional[Type[str]] = None,
         clean_session: bool = True, 
         optimistic_acknowledgement: bool = True,
-        topic: str = None, # Topic where will_message will send payload
-        payload: str = None, # will_message payload to send 
-        will_delay_interval: int = 10, # will_message delay interval
         **kwargs: Any
     ) -> None:
 
@@ -43,9 +40,6 @@ class FastMQTT:
 
         param :: optimistic_acknowledgement :  #TODO more info needed
         type  :: optimistic_acknowledgement: bool
-       
-        param :: will_message : this message will be published by broker after client disconnects 
-        type  :: will_message: str
         '''
 
         if not client_id: client_id = uuid.uuid4().hex
@@ -65,8 +59,13 @@ class FastMQTT:
         self.executor = ThreadPoolExecutor()
         self.loop = asyncio.get_event_loop()
 
-        if topic and payload:
-            self.client._will_message = Message(topic, payload, will_delay_interval=will_delay_interval)
+        if self.config.will_message_topic and self.config.will_message_payload and self.config.will_delay_interval:
+            print("WILL MESSAGE INITILAZIED")
+            self.client._will_message = Message(
+                self.config.will_message_topic, 
+                self.config.will_message_payload,
+                self.config.will_delay_interval
+            )
 
     async def connection(self) -> None:
         

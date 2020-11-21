@@ -6,13 +6,14 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 from fastapi_mqtt.config import MQQTConfig
 
-mqtt_config = MQQTConfig()
+mqtt_config = MQQTConfig(
+    will_message_topic = "/TEST/WILL",
+    will_message_payload = "DEADDDD",
+    will_delay_interval = 2
+)
 
 fast_mqtt = FastMQTT(
-    config=mqtt_config,
-    topic="/TEST/WILL",
-    payload="THIS PROCESS DEAD !!!!!!!",
-    will_delay_interval=2
+    config=mqtt_config
 )
 
 
