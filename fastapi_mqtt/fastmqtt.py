@@ -107,7 +107,7 @@ class FastMQTT:
         return message_handler
 
 
-    async def publish(self, message_or_topic, payload=None, qos=0, retain=False, **kwargs):
+    async def publish(self, message_or_topic, payload=None, qos=qos, retain=False, **kwargs):
         '''
             publish method
         
@@ -125,7 +125,7 @@ class FastMQTT:
         '''
 
         loop = asyncio.get_event_loop()
-        func = partial(self.client.publish, message_or_topic, payload=None, qos=0, retain=False, **kwargs)
+        func = partial(self.client.publish, message_or_topic, payload=payload, qos=qos, retain=retain, **kwargs)
         return await loop.run_in_executor(self.executor, func)
 
     async def unsubscribe(self, topic: str, **kwargs):
