@@ -107,7 +107,7 @@ class FastMQTT:
         return message_handler
 
 
-    async def publish(self, message_or_topic, payload=None, qos=qos, retain=False, **kwargs):
+    async def publish(self, message_or_topic, payload=None, qos=0, retain=False, **kwargs):
         '''
             publish method
         

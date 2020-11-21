@@ -11,7 +11,7 @@ mqtt_config = MQQTConfig()
 fast_mqtt = FastMQTT(
     config=mqtt_config,
     topic="/TEST/WILL",
-    payload="THIS PROCESS DEAD",
+    payload="THIS PROCESS DEAD !!!!!!!",
     will_delay_interval=2
 )
 
@@ -24,8 +24,13 @@ executor = ThreadPoolExecutor()
 async def startapp():
     await fast_mqtt.connection()
 
+@app.on_event("shutdown")
+async def shutdown():
+    await fast_mqtt.client.disconnect()
+
 @fast_mqtt.on_connect()
 def connect(client, flags, rc, properties):
+    fast_mqtt.client.subscribe("/TEST/WILL")
     fast_mqtt.client.subscribe("/hello")
     print("Connected: ", client, flags, rc, properties)
 
