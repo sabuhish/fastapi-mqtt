@@ -1,18 +1,48 @@
-
-from gmqtt import Client as MQTTClient
-from gmqtt import Message
-from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
+import os
 import ssl
+import uuid
+import asyncio
 from ssl import SSLContext
+from functools import partial
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Callable, Dict, Optional, Type, Union
+from gmqtt import Message
+from gmqtt import Client as MQTTClient
 from gmqtt.mqtt.constants import MQTTv311,MQTTv50
 from .config import MQQTConfig
-import uuid
-from functools import partial
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
-
+try:
+    from uvicorn.config import logger 
+    log_info = logger
+except:
+    import logging
+    log_info = logging.getLogger()
 
 class FastMQTT:
+    '''
+        FastMQTT client object to establish connection parametrs beforeconnect and manipulate MQTT service. 
+        
+        The class object holds session information necesseary to connect MQTT broker.
+        ```
+        param :: config : "Config parameters for gmqtt.Client"
+        type  :: config: MQQTConfig
+        ```
+        ```
+        param :: client_id : client_id  "should be unique identfiyer for connection to MQQT broker"
+        type  :: client_id: Any
+        ```
+        ```
+        param :: clean_session :    "The clean session flag tells the broker whether the client wants to establish \
+                                    a persistent session or not. In a persistent session clean_session = False, the broker stores all subscriptions for the client and \
+                                    all missed messages for the client that subscribed with a Quality of Service (QoS) level 1 or 2. \
+                                    If the session is not persistent (clean_session = True),the broker does not store anything for the client and \
+                                    purges all information from any previous persistent session.The client_id that the client provides when it establishes connection to the broker identifies the session."
+        type  :: clean_session: bool
+        ```
+        ```
+        param :: optimistic_acknowledgement :  #TODO more info needed
+        type  :: optimistic_acknowledgement: bool
+        ```
+    '''
     def __init__(
         self,
         config: MQQTConfig,  
@@ -23,24 +53,7 @@ class FastMQTT:
         **kwargs: Any
     ) -> None:
 
-        '''
-        FastMQTT client object to establish connection parametrs beforeconnect and manipulate MQTT service.
         
-        The class object holds session information necesseary to connect MQTT broker.
-       
-        param :: config : Config parameters for gmqtt.Client
-        type  :: config: MQQTConfig
-
-        param :: client_id : client_id  should be unique identfiyer for connection to MQQT broker
-        type  :: client_id: Any
-
-        param :: clean_session : The clean session flag tells the broker whether the client wants to establish
-            a persistent session or not. In a persistent session clean_session = False, the broker stores all subscriptions for the client and all missed messages for the client that subscribed with a Quality of Service (QoS) level 1 or 2. If the session is not persistent (clean_session = True), the broker does not store anything for the client and purges all information from any previous persistent session. The client_id that the client provides when it establishes connection to the broker identifies the session.
-        type  :: clean_session: bool
-
-        param :: optimistic_acknowledgement :  #TODO more info needed
-        type  :: optimistic_acknowledgement: bool
-        '''
 
         if not client_id: client_id = uuid.uuid4().hex
 
@@ -58,27 +71,32 @@ class FastMQTT:
         self.client._connect_properties: Any = kwargs
         self.executor = ThreadPoolExecutor()
         self.loop = asyncio.get_event_loop()
+        
+        log_info = logger
 
         if self.config.will_message_topic and self.config.will_message_payload and self.config.will_delay_interval:
-            print("WILL MESSAGE INITILAZIED")
             self.client._will_message = Message(
                 self.config.will_message_topic, 
                 self.config.will_message_payload,
                 self.config.will_delay_interval
             )
+            log_info.debug(f"topic -> {self.config.will_message_topic} \n payload -> {self.config.will_message_payload} \n will_delay_interval -> {self.config.will_delay_interval}")
+            log_info.info("WILL MESSAGE INITIALIZED")
+
 
     async def connection(self) -> None:
         
         if self.client._username:
-         
             self.client.set_auth_credentials(self.client._username, self.client._password)
+            log_info.info("user is authenticated")
 
         await self.__set_connetion_config()
 
         version = self.config.version or MQTTv50
+        log_info.warning(f"Used broker version is {version}")
 
         await self.client.connect(self.client._host,self.client._port,self.client._ssl,self.client._keepalive,version)
-
+        log_info.info("connected to broker..")
 
     async def __set_connetion_config(self) -> None:
         '''
@@ -99,6 +117,7 @@ class FastMQTT:
         """
         
         def message_handler(handler: Callable) -> Callable:
+            log_info.info("on_message handler accepted")
             self.client.on_message = handler
             
             return handler
@@ -125,6 +144,7 @@ class FastMQTT:
 
         loop = asyncio.get_event_loop()
         func = partial(self.client.publish, message_or_topic, payload=payload, qos=qos, retain=retain, **kwargs)
+        log_info.info("publish")
         return await loop.run_in_executor(self.executor, func)
 
     async def unsubscribe(self, topic: str, **kwargs):
@@ -139,6 +159,7 @@ class FastMQTT:
         '''
 
         func = partial(self.client.unsubscribe, topic, **kwargs)
+        log_info.info("unsubscribe")
         return await self.loop.run_in_executor(self.executor, func)
     
     def on_connect(self):
@@ -146,6 +167,7 @@ class FastMQTT:
         Decarator method used to handle connection to MQTT.
         """
         def connect_handler(handler: Callable) -> Callable:
+            log_info.info("handler accepted")
             self.client.on_connect = handler
                 
             return handler
@@ -159,6 +181,7 @@ class FastMQTT:
         """
 
         def subscribe_handler(handler: Callable):
+            log_info.info("on_subscribe handler accepted")
             self.client.on_subscribe = handler
             return handler
 
@@ -172,6 +195,7 @@ class FastMQTT:
         """
         
         def disconnect_handler(handler: Callable) -> Callable:
+            log_info.info("on_disconnect handler accepted")
             self.client.on_disconnect = handler
 
             return handler
