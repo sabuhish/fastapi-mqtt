@@ -1,0 +1,43 @@
+site_name: FastApi-MQTT
+site_url: 
+site_description: fastapi-mqtt is client for MQTT protocol
+dev_addr: 127.0.0.1:8080
+
+theme:
+  name: material
+
+  palette:
+    primary: 'black'
+    accent: teal
+    
+  font:
+    text: Roboto
+    
+  features:
+    - search.highlight
+    
+
+  icon:
+    repo: fontawesome/brands/github
+repo_name: fastapi-mqtt
+repo_url: https://github.com/sabuhish/fastapi-mqtt
+edit_uri: ''
+
+plugins:
+- search
+- markdownextradata:
+    data: data
+
+markdown_extensions:
+  - toc:
+      permalink: true
+
+      
+nav:
+  - FastApi MQTT: index.md
+  - Install: install.md
+  - Getting Started: getting-started.md
+  # - Full Example: example.md
+  - License: license.md
+
+
