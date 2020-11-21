@@ -7,8 +7,8 @@ __author__ = "Sabuhi Shukurov"
 
 __email__ = 'sabuhi.shukurov@gmail.com'
 
-__credits__ = ["Sabuhi Shukurov","Hasan Aliyev"]
+__credits__ = ["Sabuhi Shukurov","Hasan Aliyev", "Tural Muradov"]
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 __all__ = ["FastMQTT", "MQQTConfig"]

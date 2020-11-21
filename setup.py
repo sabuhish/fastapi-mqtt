@@ -26,7 +26,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     license='MIT',
     url="https://github.com/sabuhish/fastapi-mqtt",
-    install_requires=["gmqtt>=0.6.8",'pydantic>=1.7.2',"fastapi>=0.61.2"],
+    install_requires=["gmqtt>=0.6.8","uvicorn>=0.12.2", 'pydantic>=1.7.2',"fastapi>=0.61.2"],
     platforms=['any'],
     packages=setuptools.find_packages(),
     download_url="https://github.com/sabuhish/fastapi-mqtt",

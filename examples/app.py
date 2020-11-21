@@ -1,16 +1,8 @@
 from fastapi_mqtt.fastmqtt import FastMQTT
 from fastapi import FastAPI
-import asyncio
-from functools import partial
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-
 from fastapi_mqtt.config import MQQTConfig
 
-mqtt_config = MQQTConfig(
-    will_message_topic = "/TEST/WILL",
-    will_message_payload = "DEADDDD",
-    will_delay_interval = 2
-)
+mqtt_config = MQQTConfig()
 
 fast_mqtt = FastMQTT(
     config=mqtt_config
@@ -18,7 +10,6 @@ fast_mqtt = FastMQTT(
 
 
 app = FastAPI()
-executor = ThreadPoolExecutor()
 
 
 @app.on_event("startup")
@@ -32,14 +23,13 @@ async def shutdown():
 
 @fast_mqtt.on_connect()
 def connect(client, flags, rc, properties):
-    fast_mqtt.client.subscribe("/TEST/WILL")
-    fast_mqtt.client.subscribe("/hello")
+    fast_mqtt.client.subscribe("/mqtt") #subscribing mqtt topic 
     print("Connected: ", client, flags, rc, properties)
 
 
 @fast_mqtt.on_message()
 async def message(client, topic, payload, qos, properties):
-    print("Connected: ", client, topic, payload, qos, properties)
+    print("Received message: ",topic, payload.decode(), qos, properties)
 
 
 @fast_mqtt.on_disconnect()
@@ -48,8 +38,10 @@ def disconnect(client, packet, exc=None):
 
 @fast_mqtt.on_subscribe()
 def subscribe(client, mid, qos, properties):
-    print("SUBSCRIBED", client, mid, qos, properties)
+    print("subscribed", client, mid, qos, properties)
 
 @app.get("/")
-async def home():
-    await fast_mqtt.publish("/hello", "salam")
+async def func():
+    await fast_mqtt.publish("/mqtt", "Hello from Fastapi") #publishing mqtt topic 
+
+    return {"result": True,"message":"Published" }

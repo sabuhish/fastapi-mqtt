@@ -1,8 +1,8 @@
-from pydantic import  BaseSettings
+from pydantic import  BaseSettings as Settings
 from gmqtt.mqtt.constants import MQTTv50
 
 
-class MQQTConfig(BaseSettings):
+class MQQTConfig(Settings):
     '''
     MQQTConfig is main the configuration to be passsed client object.
 
@@ -27,7 +27,7 @@ class MQQTConfig(BaseSettings):
         If you want to change this behaviour pass reconnect_retries and reconnect_delay with its values. 
         For more info: # https://github.com/wialon/gmqtt#reconnects
 
-    # Last three parameters is used after client disconnects abnormally
+    # Last three parameters is used after client disconnects abnormally 
     param :: will_message_topic : Topic of the payload
     param :: will_message_payload : The payload
     param :: will_delay_interval : Delay interval

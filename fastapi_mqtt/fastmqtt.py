@@ -24,7 +24,7 @@ class FastMQTT:
     ) -> None:
 
         '''
-        FastMQTT client object to establish connection parametrs beforeconnect and manipulate MQTT service.
+        FastMQTT client object to establish connection parametrs before connect and manipulate MQTT service.
         
         The class object holds session information necesseary to connect MQTT broker.
        
@@ -105,36 +105,33 @@ class FastMQTT:
         return message_handler
 
 
-    async def publish(self, message_or_topic, payload=None, qos=0, retain=False, **kwargs):
+    async def publish(self, message_or_topic: str, payload: Any = None, qos: int = 0, retain: bool = False, **kwargs):
         '''
             publish method
         
-            param :: message_or_topic : 
-            type  :: message_or_topic: 
+            param :: message_or_topic : topic name
+            type  :: message_or_topic:  str
         
-            param :: payload : 
-            type  :: payload: 
+            param :: payload : message payload
+            type  :: payload: Any
 
-            param :: qos : 
+            param :: qos : Quality of Assuarance
             type  :: qos:  
             
             param :: retain : 
             type  :: retain:  
         '''
 
-        loop = asyncio.get_event_loop()
         func = partial(self.client.publish, message_or_topic, payload=payload, qos=qos, retain=retain, **kwargs)
-        return await loop.run_in_executor(self.executor, func)
+        return await self.loop.run_in_executor(self.executor, func)
 
     async def unsubscribe(self, topic: str, **kwargs):
 
         '''
             unsubscribe method
 
-    def unsubscribe(self, topic: str, **kwargs):
-       return self.client._connection.unsubscribe(topic, **kwargs)
-            param :: retain : 
-            type  :: retain:  
+            param :: topic : topic name
+            type  :: str:  
         '''
 
         func = partial(self.client.unsubscribe, topic, **kwargs)

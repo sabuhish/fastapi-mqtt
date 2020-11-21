@@ -5,18 +5,11 @@ dev_addr: 127.0.0.1:8080
 
 theme:
   name: material
-
   palette:
-    primary: 'black'
-    accent: teal
-    
-  font:
-    text: Roboto
-    
-  features:
-    - search.highlight
-    
-
+    scheme: slate
+    primary: teal
+    accent: purple
+  
   icon:
     repo: fontawesome/brands/github
 repo_name: fastapi-mqtt
@@ -31,13 +24,12 @@ plugins:
 markdown_extensions:
   - toc:
       permalink: true
-
-      
+    
 nav:
   - FastApi MQTT: index.md
   - Install: install.md
   - Getting Started: getting-started.md
-  # - Full Example: example.md
+  - Full Example: example.md
   - License: license.md
 
 
