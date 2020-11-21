@@ -18,7 +18,7 @@ Module has support of MQTT version 5.0 protocol
 
 
 ---
-**Documentation**: [FastApi-MQTT](https://sabuhish.github.io/fastapi-mqtt/).
+**Documentation**: [FastApi-MQTT](https://sabuhish.github.io/fastapi-mqtt/)
 ---
 
 
