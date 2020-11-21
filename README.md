@@ -122,4 +122,4 @@ Fell free to open issue and send pull request.
 Thanks To [Contributors](https://github.com/sabuhish/fastapi-mqtt/graphs/contributors).
 Contributions of any kind are welcome!
 
-Before you start please read [CONTRIBUTING](https://github.com/sabuhish/fastapi-mail/blob/master/CONTRIBUTING.md)
+Before you start please read [CONTRIBUTING](https://github.com/sabuhish/fastapi-mqtt/blob/master/CONTRIBUTING.md)
