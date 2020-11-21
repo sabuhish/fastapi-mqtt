@@ -17,7 +17,8 @@ setuptools.setup(
     version=fastapi_mqtt.__version__,
     author=fastapi_mqtt.__author__,
     author_email=fastapi_mqtt.__email__,
-    description="test",
+    description="fastapi-mqtt is client for MQTT protocol",
+    keywords='fastapi-mqtt, fastapimqtt', 
     long_description=long_description,
     long_description_content_type="text/markdown",
     license='MIT',
@@ -27,5 +28,10 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     download_url="https://github.com/sabuhish/fastapi-mqtt",
     classifiers=CLASSIFIERS,
-    python_requires='>=3.5'
+    python_requires='>=3.6'
+    project_urls={  
+        'Bug Reports': 'https://github.com/sabuhish/fastapi-mqtt/issues',
+        'Say Thanks!': 'https://github.com/sabuhish/fastapi-mqtt/graphs/contributors',
+        'Source': 'https://github.com/sabuhish/fastapi-mqtt',
+    },
 )

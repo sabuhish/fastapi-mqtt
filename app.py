@@ -24,7 +24,7 @@ async def startapp():
 @fast_mqtt.on_connect()
 def connect(client, flags, rc, properties):
     fast_mqtt.client.subscribe("/hello")
-    print("Connected1: ", client, flags, rc, properties)
+    print("Connected: ", client, flags, rc, properties)
 
 
 @fast_mqtt.on_message()
