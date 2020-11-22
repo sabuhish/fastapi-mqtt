@@ -9,7 +9,7 @@ __email__ = 'sabuhi.shukurov@gmail.com'
 
 credits = ["Sabuhi Shukurov","Hasan Aliyev", "Tural Muradov"]
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 
 __all__ = ["FastMQTT", "MQQTConfig"]

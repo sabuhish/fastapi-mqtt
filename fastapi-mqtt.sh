@@ -7,7 +7,7 @@ EMAIL="sabuhi.shukurov@gmail.com"
 CURRENT_DIRECTORY=$(pwd)
 
 
-function easy_podman_usage(){
+function automated_commands(){
 
     if [[ "$1" == "clean" || $1 == "install" ]]; then
 
@@ -45,4 +45,4 @@ function easy_podman_usage(){
 
 }
 
-easy_podman_usage $1
+automated_commands $1
