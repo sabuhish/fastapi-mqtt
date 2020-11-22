@@ -7,7 +7,7 @@ __author__ = "Sabuhi Shukurov"
 
 __email__ = 'sabuhi.shukurov@gmail.com'
 
-__credits__ = ["Sabuhi Shukurov","Hasan Aliyev", "Tural Muradov"]
+credits = ["Sabuhi Shukurov","Hasan Aliyev", "Tural Muradov"]
 
 __version__ = "0.0.3"
 

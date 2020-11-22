@@ -12,7 +12,6 @@ Feel free to submit issues and enhancement requests.
 
 Contributing
 ------------
-
 Please refer to each project's style and contribution guidelines for submitting patches and additions. In general, we follow the "fork-and-pull" Git workflow.
 
  1. **Fork** the repo on GitHub
@@ -29,15 +28,12 @@ Please refer to each project's style and contribution guidelines for submitting 
 $ bash fastapi-mqtt.sh install   
 $ source .venv/bin/activate
 $ cat app.py
-
-
 ```
 
 ```sh
 uvicorn app:app --port 8000 --reload
-
 ```
 
 
 
-NOTE: Be sure to merge the latest from "upstream" before making a pull request!
+NOTE: Be sure to merge the latest from `upstream` before making a pull request!

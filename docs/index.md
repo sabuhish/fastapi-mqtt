@@ -1,42 +1,32 @@
-<!-- ## Mad Migration
+# FastApi-MQTT
 
-[![MIT licensed](https://img.shields.io/github/license/marlin-dev/startapp)](https://raw.githubusercontent.com/marlin-dev/startapp/master/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/marlin-dev/startapp.svg)](https://github.com/marlin-dev/startapp/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/marlin-dev/startapp.svg)](https://github.com/marlin-dev/startapp/network)
-[![GitHub issues](https://img.shields.io/github/issues-raw/marlin-dev/startapp)](https://github.com/marlin-dev/startapp/issues)
-[![Downloads](https://pepy.tech/badge/startapp)](https://pepy.tech/project/startapp)
+## Extension
+MQTT is a lightweight publish/subscribe messaging protocol designed for M2M (machine to machine) telemetry in low bandwidth environments. 
+Fastapi-mqtt  is the client for working with MQTT. 
 
+For more information about MQQT, please refer to here:  [MQTT](mqtt.md)
 
-CLI tool and Packgae provide easy and fast migration from one database to another database by specifiying its fields and types. 
+Fatapi-mqtt wraps around  [gmqtt](https://github.com/wialon/gmqtt) module. Gmqtt Python async client for MQTT client implementation. 
+Module has support of MQTT version 5.0 protocol
 
-Tool has been made by Mad Team for other tools check our [Organization](https://github.com/MadMigrationTeam).
+## Badges
 
-Full code can be found on [GitHub Repo](https://github.com/MadMigrationTeam/mad-migration).
+[![MIT licensed](https://img.shields.io/github/license/sabuhish/fastapi-mqtt)](https://raw.githubusercontent.com/sabuhish/fastapi-mqtt/master/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/sabuhish/fastapi-mqtt.svg)](https://github.com/sabuhish/fastapi-mqtt/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/sabuhish/fastapi-mqtt.svg)](https://github.com/sabuhish/fastapi-mqtt/network)
+[![GitHub issues](https://img.shields.io/github/issues-raw/sabuhish/fastapi-mqtt)](https://github.com/sabuhish/fastapi-mqtt/issues)
+[![Downloads](https://pepy.tech/badge/fastapi-mqtt)](https://pepy.tech/project/fastapi-mqtt)
 
+## Available Features
 
-Please see the [License](license.md) for further details.
+MQTT  specification avaliable with help decarator methods using callbacks:
 
+-  ```on_connect() ```
+-  ```on_disconnect()  ```
+-  ```on_subscribe()  ```
+-  ```on_message()  ```
 
-
-## Dependencies
-
-    sqlalchmey
-    mysql-client
-    
-```
-Fenced code blocks are like Standard
-
-```
-
-
-```python
-if not (credentials.username == "stanleyjobson") or not (credentials.password == "swordfish"):
-    # Return some error
-    ...
-```
-
-* Import `HTTPBasic` and `HTTPBasicCredentials`.
-* Create a "`security` scheme" using `HTTPBasic`.
-* Use that `security` with a dependency in your *path operation*.
-* It returns an object of type `HTTPBasicCredentials`:
-    * It contains the `username` and `password` sent. -->
+Base Settings available with ```pydantic``` class: 
+ 
+- ```Authetication``` to broker with credentials 
+- ```unsubscribe``` certain topics and ```publish``` to certain topics

@@ -27,9 +27,13 @@ markdown_extensions:
     
 nav:
   - FastApi MQTT: index.md
-  - Install: install.md
-  - Getting Started: getting-started.md
-  - Full Example: example.md
-  # - License: license.md
+  - 🔨 Installation: install.md
+  - 🕹 Getting Started: getting-started.md
+  - Example: example.md
+  - MQTT: mqtt.md
+  - Contirbution: contribute.md
+
+
+
 
 

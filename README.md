@@ -43,7 +43,8 @@ MQTT  specification avaliable with help decarator methods using callbacks:
 
 
 
-### Guide
+### 🕹 Guide
+
 
 ```python
 from fastapi import FastAPI

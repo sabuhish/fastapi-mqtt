@@ -23,7 +23,7 @@ class FastMQTT:
         
         The class object holds session information necesseary to connect MQTT broker.
         ```
-        param :: config : "Config parameters for gmqtt.Client"
+        param :: config : MQQTConfig config class 
         type  :: config: MQQTConfig
         ```
         ```
