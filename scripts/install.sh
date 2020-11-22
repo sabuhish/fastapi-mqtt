@@ -58,7 +58,6 @@ async def startapp():
     await fast_mqtt.connection()
 
 
-        if [ -
 @app.on_event('shutdown')
 async def shutdown():
     await fast_mqtt.client.disconnect()

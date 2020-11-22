@@ -144,7 +144,7 @@ class FastMQTT:
 
         func = partial(self.client.publish, message_or_topic, payload=payload, qos=qos, retain=retain, **kwargs)
         log_info.info("publish")
-        return await loop.run_in_executor(self.executor, func)
+        return await  self.loop.run_in_executor(self.executor, func)
 
     async def unsubscribe(self, topic: str, **kwargs):
 

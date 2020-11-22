@@ -20,7 +20,7 @@ setuptools.setup(
     version=fastapi_mqtt.__version__,
     author=fastapi_mqtt.__author__,
     author_email=fastapi_mqtt.__email__,
-    description="fastapi-mqtt is client for MQTT protocol",
+    description="fastapi-mqtt is extension for MQTT protocol",
     keywords='fastapi-mqtt, fastapimqtt', 
     long_description=long_description,
     long_description_content_type="text/markdown",
