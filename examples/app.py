@@ -26,6 +26,10 @@ def connect(client, flags, rc, properties):
     fast_mqtt.client.subscribe("/mqtt") #subscribing mqtt topic 
     print("Connected: ", client, flags, rc, properties)
 
+@fast_mqtt.subscribe("mqtt/+/temperature", "mqtt/+/humidity")
+async def home_message(client, topic, payload, qos, properties):
+    print("temperature/humidity: ", topic, payload.decode(), qos, properties)
+    return 0
 
 @fast_mqtt.on_message()
 async def message(client, topic, payload, qos, properties):
