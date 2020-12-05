@@ -1,17 +1,18 @@
-Contributing to fastapi-mqtt
+Contributing to fastapi-mail
 =========================================
 
-We welcome contributions to [fastapi-mqtt](https://github.com/sabuhish/fastapi-mqtt)
+We welcome contributions to [fastapi-mail](https://github.com/sabuhish/fastapi-mail)
 
 Issues
 ------
 
 Feel free to submit issues and enhancement requests.
 
-[Fatapi-MQTT Issues](https://github.com/sabuhish/fastapi-mqtt/issues)
+[Fatapi-Mail Issues](https://github.com/sabuhish/fastapi-mail/issues)
 
 Contributing
 ------------
+
 Please refer to each project's style and contribution guidelines for submitting patches and additions. In general, we follow the "fork-and-pull" Git workflow.
 
  1. **Fork** the repo on GitHub
@@ -21,19 +22,23 @@ Please refer to each project's style and contribution guidelines for submitting 
  5. Submit a **Pull request** so that we can review your changes
 
 
-### Before get in to the repo and type: 
+### Before get in to the repo and type
 
 
 ```sh
-$ bash fastapi-mqtt.sh install   
+$ bash install.sh   
 $ source .venv/bin/activate
-$ cat app.py
+$ cat main.py
+or
+
 ```
+or run fastapi app with uvicron
 
 ```sh
 uvicorn app:app --port 8000 --reload
+
 ```
 
 
 
-NOTE: Be sure to merge the latest from `upstream` before making a pull request!
+NOTE: Be sure to merge the latest from "upstream" before making a pull request!
