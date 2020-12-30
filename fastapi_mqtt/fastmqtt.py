@@ -11,7 +11,7 @@ from gmqtt import Client as MQTTClient
 from gmqtt.mqtt.constants import MQTTv311,MQTTv50
 from .config import MQQTConfig
 try:
-    from uvicorn.config import logger 
+    from uvicorn.config import logger
     log_info = logger
 except:
     import logging
@@ -19,11 +19,11 @@ except:
 
 class FastMQTT:
     '''
-        FastMQTT client object to establish connection parametrs beforeconnect and manipulate MQTT service. 
-        
+        FastMQTT client object to establish connection parametrs beforeconnect and manipulate MQTT service.
+
         The class object holds session information necesseary to connect MQTT broker.
         ```
-        param :: config : MQQTConfig config class 
+        param :: config : MQQTConfig config class
         type  :: config: MQQTConfig
         ```
         ```
@@ -45,10 +45,10 @@ class FastMQTT:
     '''
     def __init__(
         self,
-        config: MQQTConfig,  
-        *, 
+        config: MQQTConfig,
+        *,
         client_id:  Optional[Type[str]] = None,
-        clean_session: bool = True, 
+        clean_session: bool = True,
         optimistic_acknowledgement: bool = True,
         **kwargs: Any
     ) -> None:
@@ -73,12 +73,12 @@ class FastMQTT:
         self.handlers = dict()
         self.executor = ThreadPoolExecutor()
         self.loop = asyncio.get_event_loop()
-        
+
         log_info = logger
 
         if self.config.will_message_topic and self.config.will_message_payload and self.config.will_delay_interval:
             self.client._will_message = Message(
-                self.config.will_message_topic, 
+                self.config.will_message_topic,
                 self.config.will_message_payload,
                 self.config.will_delay_interval
             )
@@ -117,7 +117,7 @@ class FastMQTT:
         return False
 
     async def connection(self) -> None:
-        
+
         if self.client._username:
             self.client.set_auth_credentials(self.client._username, self.client._password)
             log_info.info("user is authenticated")
@@ -132,14 +132,14 @@ class FastMQTT:
 
     async def __set_connetion_config(self) -> None:
         '''
-            By default, connected MQTT client will always try to reconnect in case of lost connections. 
-            Number of reconnect attempts is unlimited. If you want to change this behaviour ass reconnect_retries and reconnect_delay with its values. 
+            By default, connected MQTT client will always try to reconnect in case of lost connections.
+            Number of reconnect attempts is unlimited. If you want to change this behaviour ass reconnect_retries and reconnect_delay with its values.
             For more info: # https://github.com/wialon/gmqtt#reconnects
         '''
-       
+
         if self.config.reconnect_retries:
             self.client.set_config(reconnect_retries=self.config.reconnect_retries)
-           
+
         if self.config.reconnect_delay:
             self.client.set_config(reconnect_delay=self.config.reconnect_delay)
 
@@ -193,11 +193,11 @@ class FastMQTT:
         '''
             Decarator method used to subscirbe messages from all topics.
         '''
-        
+
         def message_handler(handler: Callable) -> Callable:
             log_info.info("on_message handler accepted")
             self.user_message_handler = handler
-            
+
             return handler
 
         return message_handler
@@ -206,18 +206,18 @@ class FastMQTT:
     async def publish(self, message_or_topic: str, payload: Any = None, qos: int = 0, retain: bool = False, **kwargs):
         '''
             publish method
-        
+
             param :: message_or_topic : topic name
             type  :: message_or_topic:  str
-        
+
             param :: payload : message payload
             type  :: payload: Any
 
             param :: qos : Quality of Assuarance
-            type  :: qos:  
-            
-            param :: retain : 
-            type  :: retain:  
+            type  :: qos:
+
+            param :: retain :
+            type  :: retain:
         '''
 
         func = partial(self.client.publish, message_or_topic, payload=payload, qos=qos, retain=retain, **kwargs)
@@ -230,7 +230,7 @@ class FastMQTT:
             unsubscribe method
 
             param :: topic : topic name
-            type  :: str:  
+            type  :: str:
         '''
 
         func = partial(self.client.unsubscribe, topic, **kwargs)
@@ -239,7 +239,7 @@ class FastMQTT:
             del self.handlers[topic]
 
         return await self.loop.run_in_executor(self.executor, func)
-    
+
     def on_connect(self):
         '''
         Decarator method used to handle connection to MQTT.
@@ -247,12 +247,12 @@ class FastMQTT:
         def connect_handler(handler: Callable) -> Callable:
             log_info.info("handler accepted")
             self.user_connect_handler = handler
-                
+
             return handler
 
         return connect_handler
-    
-    
+
+
     def on_subscribe(self):
         '''
         Decarator method used to obtain subscibred topics and properties.
@@ -265,12 +265,12 @@ class FastMQTT:
 
         return subscribe_handler
 
-     
+
     def on_disconnect(self):
         '''
         Decarator method used wrap disconnet callback.
         '''
-        
+
         def disconnect_handler(handler: Callable) -> Callable:
             log_info.info("on_disconnect handler accepted")
             self.client.on_disconnect = handler
