@@ -9,6 +9,6 @@ __version__ = "0.1.0"
 from sys import modules as imported_modules
 if not "setuptools" in imported_modules.keys():
     from fastapi_mqtt.fastmqtt import FastMQTT
-    from fastapi_mqtt.config import  MQQTConfig
+    from fastapi_mqtt.config import  MQTTConfig, MQQTConfig
 
-    __all__ = ["FastMQTT", "MQQTConfig"]
+    __all__ = ["FastMQTT", "MQTTConfig", "MQQTConfig"]
