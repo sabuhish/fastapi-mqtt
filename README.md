@@ -30,6 +30,9 @@ MQTT  specification avaliable with help decarator methods using callbacks:
 -  on_disconnect()
 -  on_subscribe()
 -  on_message()
+-  subscribe(topic_names)
+
+
 
 - Base Settings available with ```pydantic``` class
 - Authetication to broker with credentials
