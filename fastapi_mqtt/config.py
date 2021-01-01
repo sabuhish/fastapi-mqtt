@@ -1,4 +1,6 @@
 from pydantic import  BaseSettings as Settings
+from ssl import SSLContext
+from typing import Union
 from gmqtt.mqtt.constants import MQTTv50
 from warnings import warn
 
@@ -35,7 +37,7 @@ class MQTTConfig(Settings):
     '''
     host: str = "localhost"
     port: int = 1883
-    ssl:  bool = False
+    ssl: Union[bool, SSLContext] = False
     keepalive:  int = 60
     username: str = None
     password: str  = None
