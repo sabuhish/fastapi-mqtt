@@ -2,14 +2,15 @@ from pydantic import  BaseSettings as Settings
 from ssl import SSLContext
 from typing import Union
 from gmqtt.mqtt.constants import MQTTv50
+from warnings import warn
 
 
-class MQQTConfig(Settings):
+class MQTTConfig(Settings):
     '''
-    MQQTConfig is main the configuration to be passsed client object.
+    MQTTConfig is main the configuration to be passsed client object.
 
-    host : To connect MQQT broker, defaults to localhost
-    port : To connect MQQT broker, defaults to 1883
+    host : To connect MQTT broker, defaults to localhost
+    port : To connect MQTT broker, defaults to 1883
 
     ssl : if given and not false, a SSL/TLS transport is created (by default a plain TCP transport is created)
         If ssl is a ssl.SSLContext object, this context is used to create the transport; if ssl is True, a default context returned from ssl.create_default_context() is used.
@@ -48,3 +49,7 @@ class MQQTConfig(Settings):
     will_message_topic: str = None
     will_message_payload: str = None
     will_delay_interval: int = None
+
+
+class MQQTConfig(MQTTConfig):
+    warn("The MQQTConfig class is renamed MQTTConfig", DeprecationWarning, stacklevel=2)

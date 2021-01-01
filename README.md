@@ -1,11 +1,11 @@
 # fastapi-mqtt
 
-MQTT is a lightweight publish/subscribe messaging protocol designed for M2M (machine to machine) telemetry in low bandwidth environments. 
-Fastapi-mqtt  is the client for working with MQTT. 
+MQTT is a lightweight publish/subscribe messaging protocol designed for M2M (machine to machine) telemetry in low bandwidth environments.
+Fastapi-mqtt  is the client for working with MQTT.
 
-For more information about MQQT, please refer to here:  [MQTT](MQTT.md)
+For more information about MQTT, please refer to here:  [MQTT](MQTT.md)
 
-Fatapi-mqtt wraps around  [gmqtt](https://github.com/wialon/gmqtt) module. Gmqtt Python async client for MQTT client implementation. 
+Fatapi-mqtt wraps around  [gmqtt](https://github.com/wialon/gmqtt) module. Gmqtt Python async client for MQTT client implementation.
 Module has support of MQTT version 5.0 protocol
 
 
@@ -26,13 +26,13 @@ The key feature are:
 
 MQTT  specification avaliable with help decarator methods using callbacks:
 
--  on_connect() 
--  on_disconnect()  
--  on_subscribe()  
--  on_message()  
+-  on_connect()
+-  on_disconnect()
+-  on_subscribe()
+-  on_message()
 
-- Base Settings available with ```pydantic``` class 
-- Authetication to broker with credentials 
+- Base Settings available with ```pydantic``` class
+- Authetication to broker with credentials
 - unsubscribe certain topics and publish to certain topics
 
 ###  🔨  Installation ###
@@ -48,11 +48,11 @@ MQTT  specification avaliable with help decarator methods using callbacks:
 
 ```python
 from fastapi import FastAPI
-from fastapi_mqtt import FastMQTT, MQQTConfig
+from fastapi_mqtt import FastMQTT, MQTTConfig
 
 app = FastAPI()
 
-mqtt_config = MQQTConfig()
+mqtt_config = MQTTConfig()
 
 mqtt = FastMQTT(
     config=mqtt_config
@@ -68,7 +68,7 @@ async def shutdown():
 
 @mqtt.on_connect()
 def connect(client, flags, rc, properties):
-    mqtt.client.subscribe("/mqtt") #subscribing mqtt topic 
+    mqtt.client.subscribe("/mqtt") #subscribing mqtt topic
     print("Connected: ", client, flags, rc, properties)
 
 @mqtt.on_message()
@@ -88,7 +88,7 @@ def subscribe(client, mid, qos, properties):
 Publish method:
 ```python
 async def func():
-    await mqtt.publish("/mqtt", "Hello from Fastapi") #publishing mqtt topic 
+    await mqtt.publish("/mqtt", "Hello from Fastapi") #publishing mqtt topic
 
     return {"result": True,"message":"Published" }
 
@@ -98,13 +98,13 @@ Subscribe method:
 
 @mqtt.on_connect()
 def connect(client, flags, rc, properties):
-    mqtt.client.subscribe("/mqtt") #subscribing mqtt topic 
+    mqtt.client.subscribe("/mqtt") #subscribing mqtt topic
     print("Connected: ", client, flags, rc, properties)
 
 ```
 Changing connection params
 ```python
-mqtt_config = MQQTConfig(host = "mqtt.mosquito.org",
+mqtt_config = MQTTConfig(host = "mqtt.mosquito.org",
     port= 1883,
     keepalive = 60,
     username="username",

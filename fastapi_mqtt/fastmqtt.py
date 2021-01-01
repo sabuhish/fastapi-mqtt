@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, Optional, Type, Union
 from gmqtt import Message
 from gmqtt import Client as MQTTClient
 from gmqtt.mqtt.constants import MQTTv311,MQTTv50
-from .config import MQQTConfig
+from .config import MQTTConfig
 try:
     from uvicorn.config import logger
     log_info = logger
@@ -23,11 +23,11 @@ class FastMQTT:
 
         The class object holds session information necesseary to connect MQTT broker.
         ```
-        param :: config : MQQTConfig config class
-        type  :: config: MQQTConfig
+        param :: config : MQTTConfig config class
+        type  :: config: MQTTConfig
         ```
         ```
-        param :: client_id : client_id  "should be unique identfiyer for connection to MQQT broker"
+        param :: client_id : client_id  "should be unique identfiyer for connection to MQTT broker"
         type  :: client_id: Any
         ```
         ```
@@ -45,7 +45,7 @@ class FastMQTT:
     '''
     def __init__(
         self,
-        config: MQQTConfig,
+        config: MQTTConfig,
         *,
         client_id:  Optional[Type[str]] = None,
         clean_session: bool = True,
