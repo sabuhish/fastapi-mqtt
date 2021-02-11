@@ -2,6 +2,7 @@ import os
 import ssl
 import uuid
 import asyncio
+import traceback
 from ssl import SSLContext
 from functools import partial
 from concurrent.futures import ThreadPoolExecutor
@@ -278,3 +279,17 @@ class FastMQTT:
             return handler
 
         return disconnect_handler
+
+
+    def init_app(self,app):
+        @app.on_event("startup")
+        async def startup():
+            await self.connection()
+          
+        
+        @app.on_event("shutdown")   
+        async def shutdown():
+            await self.client.disconnect()
+
+
+

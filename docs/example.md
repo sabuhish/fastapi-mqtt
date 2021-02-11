@@ -4,13 +4,16 @@
 ###  Full example
 ```python
 
-@app.on_event("startup")
-async def startapp():
-    await mqtt.connection()
+app = FastAPI()
 
-@app.on_event("shutdown")
-async def shutdown():
-    await mqtt.client.disconnect()
+mqtt_config = MQTTConfig()
+
+fast_mqtt = FastMQTT(
+    config=mqtt_config
+)
+
+fast_mqtt.init_app(app)
+
 
 @mqtt.on_connect()
 def connect(client, flags, rc, properties):

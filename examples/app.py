@@ -11,15 +11,8 @@ fast_mqtt = FastMQTT(
 
 app = FastAPI()
 
+fast_mqtt.init_app(app)
 
-@app.on_event("startup")
-async def startapp():
-    await fast_mqtt.connection()
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    await fast_mqtt.client.disconnect()
 
 @fast_mqtt.on_connect()
 def connect(client, flags, rc, properties):
