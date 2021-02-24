@@ -32,9 +32,9 @@ function automated_commands(){
         echo -e "Thanks for your try at contribution!"
 
         echo ""
-        echo -e "Usefull Commands:"
+        echo -e "Useful Commands:"
       
-        echo -e "\t install   Creating virtual enviroment and installing dependencies"
+        echo -e "\t install   Creating virtual environment and installing dependencies"
         echo -e "\t clean     Cleaning unusefull folders and files"
         echo ""
         echo -e "If you still having problem  please submit issue at: $ISSUE_URL or email me: $EMAIL"
