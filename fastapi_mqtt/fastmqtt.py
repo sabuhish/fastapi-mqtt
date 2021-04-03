@@ -55,7 +55,7 @@ class FastMQTT:
     ) -> None:
         if not client_id: client_id = uuid.uuid4().hex
 
-        self.client: MQTTClient = MQTTClient(client_id)
+        self.client: MQTTClient = MQTTClient(client_id,**kwargs)
         self.config: Dict[Any,Any] = config
 
         self.client._clean_session = clean_session
