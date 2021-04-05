@@ -72,8 +72,6 @@ class FastMQTT:
         self.user_message_handler = None
         self.user_connect_handler = None
         self.handlers = dict()
-        self.executor = ThreadPoolExecutor()
-        self.loop = asyncio.get_event_loop()
 
         log_info = logger
 
@@ -81,8 +79,7 @@ class FastMQTT:
             self.client._will_message = Message(
                 self.config.will_message_topic,
                 self.config.will_message_payload,
-                self.config.will_delay_interval
-            )
+                self.config.will_delay_interval)
             log_info.debug(f"topic -> {self.config.will_message_topic} \n payload -> {self.config.will_message_payload} \n will_delay_interval -> {self.config.will_delay_interval}")
             log_info.info("WILL MESSAGE INITIALIZED")
 
@@ -198,13 +195,11 @@ class FastMQTT:
         def message_handler(handler: Callable) -> Callable:
             log_info.info("on_message handler accepted")
             self.user_message_handler = handler
-
             return handler
-
         return message_handler
 
 
-    async def publish(self, message_or_topic: str, payload: Any = None, qos: int = 0, retain: bool = False, **kwargs):
+    def publish(self, message_or_topic: str, payload: Any = None, qos: int = 0, retain: bool = False, **kwargs):
         '''
             publish method
 
@@ -221,11 +216,9 @@ class FastMQTT:
             type  :: retain:
         '''
 
-        func = partial(self.client.publish, message_or_topic, payload=payload, qos=qos, retain=retain, **kwargs)
-        log_info.info("publish")
-        return await self.loop.run_in_executor(self.executor, func)
+        return self.client.publish(message_or_topic, payload=payload, qos=qos, retain=retain, **kwargs)
 
-    async def unsubscribe(self, topic: str, **kwargs):
+    def unsubscribe(self, topic: str, **kwargs):
 
         '''
             unsubscribe method
@@ -239,7 +232,7 @@ class FastMQTT:
         if topic in self.handlers.keys():
             del self.handlers[topic]
 
-        return await self.loop.run_in_executor(self.executor, func)
+        return self.client.unsubscribe( topic, **kwargs)
 
     def on_connect(self):
         '''
@@ -250,7 +243,6 @@ class FastMQTT:
             self.user_connect_handler = handler
 
             return handler
-
         return connect_handler
 
 
@@ -263,7 +255,6 @@ class FastMQTT:
             log_info.info("on_subscribe handler accepted")
             self.client.on_subscribe = handler
             return handler
-
         return subscribe_handler
 
 
@@ -275,9 +266,7 @@ class FastMQTT:
         def disconnect_handler(handler: Callable) -> Callable:
             log_info.info("on_disconnect handler accepted")
             self.client.on_disconnect = handler
-
             return handler
-
         return disconnect_handler
 
 
