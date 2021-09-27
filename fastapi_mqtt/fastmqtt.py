@@ -48,7 +48,7 @@ class FastMQTT:
         self,
         config: MQTTConfig,
         *,
-        client_id:  Optional[Type[str]] = None,
+        client_id:  Optional[str] = None,
         clean_session: bool = True,
         optimistic_acknowledgement: bool = True,
         **kwargs: Any
@@ -187,7 +187,7 @@ class FastMQTT:
 
         return subscribe_handler
 
-    def on_message(self):
+    def on_message(self) -> Callable[..., Any]:
         '''
             Decarator method used to subscirbe messages from all topics.
         '''
@@ -234,7 +234,7 @@ class FastMQTT:
 
         return self.client.unsubscribe( topic, **kwargs)
 
-    def on_connect(self):
+    def on_connect(self) -> Callable[..., Any]:
         '''
         Decarator method used to handle connection to MQTT.
         '''
@@ -246,7 +246,7 @@ class FastMQTT:
         return connect_handler
 
 
-    def on_subscribe(self):
+    def on_subscribe(self) -> Callable[..., Any]:
         '''
         Decarator method used to obtain subscibred topics and properties.
         '''
@@ -258,7 +258,7 @@ class FastMQTT:
         return subscribe_handler
 
 
-    def on_disconnect(self):
+    def on_disconnect(self) -> Callable[..., Any]:
         '''
         Decarator method used wrap disconnet callback.
         '''
@@ -270,7 +270,7 @@ class FastMQTT:
         return disconnect_handler
 
 
-    def init_app(self,app):
+    def init_app(self, app: FastApi) -> None:
         @app.on_event("startup")
         async def startup():
             await self.connection()
