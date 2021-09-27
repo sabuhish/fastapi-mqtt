@@ -7,6 +7,7 @@ from ssl import SSLContext
 from functools import partial
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Dict, Optional, Type, Union
+from fastapi import FastAPI
 from gmqtt import Message
 from gmqtt import Client as MQTTClient
 from gmqtt.mqtt.constants import MQTTv311,MQTTv50
@@ -270,7 +271,7 @@ class FastMQTT:
         return disconnect_handler
 
 
-    def init_app(self, app: FastApi) -> None:
+    def init_app(self, app: FastAPI) -> None:
         @app.on_event("startup")
         async def startup():
             await self.connection()
