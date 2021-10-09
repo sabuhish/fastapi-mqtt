@@ -21,7 +21,7 @@ except:
 
 class FastMQTT:
     '''
-        FastMQTT client object to establish connection parametrs beforeconnect and manipulate MQTT service.
+        FastMQTT client object to establish connection parameters before connect and manipulate MQTT service.
 
         The class object holds session information necesseary to connect MQTT broker.
         ```
@@ -82,7 +82,7 @@ class FastMQTT:
                 self.config.will_message_payload,
                 self.config.will_delay_interval)
             log_info.debug(f"topic -> {self.config.will_message_topic} \n payload -> {self.config.will_message_payload} \n will_delay_interval -> {self.config.will_delay_interval}")
-            log_info.info("WILL MESSAGE INITIALIZED")
+            log_info.debug("WILL MESSAGE INITIALIZED")
 
     @staticmethod
     def match(topic, template):
@@ -119,7 +119,7 @@ class FastMQTT:
 
         if self.client._username:
             self.client.set_auth_credentials(self.client._username, self.client._password)
-            log_info.info("user is authenticated")
+            log_info.debug("user is authenticated")
 
         await self.__set_connetion_config()
 
@@ -127,7 +127,7 @@ class FastMQTT:
         log_info.warning(f"Used broker version is {version}")
 
         await self.client.connect(self.client._host,self.client._port,self.client._ssl,self.client._keepalive,version)
-        log_info.info("connected to broker..")
+        log_info.debug("connected to broker..")
 
     async def __set_connetion_config(self) -> None:
         '''
@@ -194,7 +194,7 @@ class FastMQTT:
         '''
 
         def message_handler(handler: Callable) -> Callable:
-            log_info.info("on_message handler accepted")
+            log_info.debug("on_message handler accepted")
             self.user_message_handler = handler
             return handler
         return message_handler
@@ -229,7 +229,7 @@ class FastMQTT:
         '''
 
         func = partial(self.client.unsubscribe, topic, **kwargs)
-        log_info.info("unsubscribe")
+        log_info.debug("unsubscribe")
         if topic in self.handlers.keys():
             del self.handlers[topic]
 
@@ -240,7 +240,7 @@ class FastMQTT:
         Decarator method used to handle connection to MQTT.
         '''
         def connect_handler(handler: Callable) -> Callable:
-            log_info.info("handler accepted")
+            log_info.debug("handler accepted")
             self.user_connect_handler = handler
 
             return handler
@@ -253,7 +253,7 @@ class FastMQTT:
         '''
 
         def subscribe_handler(handler: Callable):
-            log_info.info("on_subscribe handler accepted")
+            log_info.debug("on_subscribe handler accepted")
             self.client.on_subscribe = handler
             return handler
         return subscribe_handler
@@ -265,7 +265,7 @@ class FastMQTT:
         '''
 
         def disconnect_handler(handler: Callable) -> Callable:
-            log_info.info("on_disconnect handler accepted")
+            log_info.debug("on_disconnect handler accepted")
             self.client.on_disconnect = handler
             return handler
         return disconnect_handler
