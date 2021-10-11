@@ -29,7 +29,7 @@ setuptools.setup(
     install_requires=["gmqtt>=0.6.8","uvicorn>=0.12.2", 'pydantic>=1.7.2',"fastapi>=0.61.2"],
     platforms=['any'],
     packages=setuptools.find_packages(),
-    package_data={"fastapi-mqtt": ["py.typed"]},
+    package_data={"fastapi_mqtt": ["py.typed"]},
     zip_safe=False,
     download_url="https://github.com/sabuhish/fastapi-mqtt",
     classifiers=CLASSIFIERS,
