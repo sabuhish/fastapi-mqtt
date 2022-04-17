@@ -1,18 +1,14 @@
-
 #!/bin/bash
-
 
 # Installing dependencies for fastapi-mqtt, thanks for contirbuting if you have any issues feel free to open.
 # Issue URL https://github.com/sabuhish/fastapi-mqtt/issues
-
-
 
 set -e
 
 CURRENT_DIRECTORY=$(pwd)
 
 CURRENT_USER=$(whoami)
-VERSION="0.0.3"
+VERSION="1.0.0"
 
 README_URL="https://github.com/sabuhish/fastapi-mqtt"
 
@@ -22,41 +18,35 @@ function install(){
 
     sudo -u $CURRENT_USER bash << EOF 
         echo -e "\ncreating virtualenv ..."
-        
+       
+        cd .. 
         python3 -m venv .venv
         source .venv/bin/activate
-        python --version
         
         pip install --upgrade pip
 
         echo "installing dependencies"
 
         pip install "fastapi>=0.61.2" 'uvicorn>=0.12.2' 'gmqtt>=0.6.8'  "pydantic>=1.7.2" 
-        cd ..  
+         
         DIRECTORY=$(pwd)
 
-        
         touch $DIRECTORY/app.py    
 
 echo "
 from fastapi_mqtt.fastmqtt import FastMQTT
 from fastapi import FastAPI
-from fastapi_mqtt.config import MQQTConfig
+from fastapi_mqtt.config import MQTTConfig
 
-mqtt_config = MQQTConfig()
+mqtt_config = MQTTConfig()
 
-fast_mqtt = FastMQTT(
-    config=mqtt_config
-)
-
+fast_mqtt = FastMQTT(config=mqtt_config)
 
 app = FastAPI()
-
 
 @app.on_event('startup')
 async def startapp():
     await fast_mqtt.connection()
-
 
 @app.on_event('shutdown')
 async def shutdown():
@@ -66,7 +56,6 @@ async def shutdown():
 def connect(client, flags, rc, properties):
     fast_mqtt.client.subscribe('/mqtt') #subscribing mqtt topic 
     print('Connected:', client, flags, rc, properties)
-
 
 @fast_mqtt.on_message()
 async def message(client, topic, payload, qos, properties):
@@ -83,7 +72,7 @@ def subscribe(client, mid, qos, properties):
 
 @app.get('/')
 async def func():
-    await fast_mqtt.publish('/mqtt', 'Hello from Fastapi') #publishing mqtt topic 
+    fast_mqtt.publish('/mqtt', 'Hello from Fastapi') #publishing mqtt topic 
 
     return {'result': True,'message':'Published' }" >> app.py
         
@@ -96,13 +85,15 @@ async def func():
       
 
         echo -e "\nPlease see the README file for more information:"
+        echo ""
         echo -e "$README_URL\n\n"
-        echo -e "run uvicorn app:app --port 8000 --reload" 
+        echo -e "You can also run with uvicorn:"
+        echo ""
+        echo -e "uvicorn app:app --port 8000 --reload" 
         cd $CURRENT_DIRECTORY
         exit 0
 
 EOF
-
 }
 
 install
