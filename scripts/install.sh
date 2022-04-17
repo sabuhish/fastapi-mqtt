@@ -18,7 +18,8 @@ function install(){
 
     sudo -u $CURRENT_USER bash << EOF 
         echo -e "\ncreating virtualenv ..."
-        
+       
+        cd .. 
         python3 -m venv .venv
         source .venv/bin/activate
         
@@ -27,10 +28,9 @@ function install(){
         echo "installing dependencies"
 
         pip install "fastapi>=0.61.2" 'uvicorn>=0.12.2' 'gmqtt>=0.6.8'  "pydantic>=1.7.2" 
-        cd ..  
+         
         DIRECTORY=$(pwd)
 
-        
         touch $DIRECTORY/app.py    
 
 echo "
@@ -72,7 +72,7 @@ def subscribe(client, mid, qos, properties):
 
 @app.get('/')
 async def func():
-    await fast_mqtt.publish('/mqtt', 'Hello from Fastapi') #publishing mqtt topic 
+    fast_mqtt.publish('/mqtt', 'Hello from Fastapi') #publishing mqtt topic 
 
     return {'result': True,'message':'Published' }" >> app.py
         
