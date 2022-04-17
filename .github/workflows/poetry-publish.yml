@@ -1,9 +1,8 @@
-name: Upload FastApi-MQTT Package
+name: Upload FastAPI-MQTT Package
 
 on:
   release:
     types: [created]
-
 
 jobs:
   release:
