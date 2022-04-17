@@ -1,4 +1,4 @@
-name: Upload FastApu-MQTT Package
+name: Upload FastApi-MQTT Package
 
 on:
   release:

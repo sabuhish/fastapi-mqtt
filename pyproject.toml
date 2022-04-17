@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "fastapi-mqtt"
-version = "1.0.0"
+version = "1.0.2"
 description = "fastapi-mqtt is extension for MQTT protocol"
 authors = ["sabuhish <sabuhi.shukurov@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/sabuhish/fastapi-mail"
-repository = "https://github.com/sabuhish/fastapi-mail"
+homepage = "https://github.com/sabuhish/fastapi-mqtt"
+repository = "https://github.com/sabuhish/fastapi-mqtt"
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python",
