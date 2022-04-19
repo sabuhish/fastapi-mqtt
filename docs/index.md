@@ -1,13 +1,14 @@
 # FastApi-MQTT
 
 ## Extension
-MQTT is a lightweight publish/subscribe messaging protocol designed for M2M (machine to machine) telemetry in low bandwidth environments. 
-Fastapi-mqtt  is the client for working with MQTT. 
 
-For more information about MQQT, please refer to here:  [MQTT](mqtt.md)
+MQTT is a lightweight publish/subscribe messaging protocol designed for M2M (machine to machine) telemetry in low bandwidth environments.
+Fastapi-mqtt is the client for working with MQTT.
 
-Fatapi-mqtt wraps around  [gmqtt](https://github.com/wialon/gmqtt) module. Gmqtt Python async client for MQTT client implementation. 
-Module has support of MQTT version 5.0 protocol
+For more information about MQQT, please refer to here: [MQTT](mqtt.md)
+
+Fatapi-mqtt wraps around [gmqtt](https://github.com/wialon/gmqtt) module. Gmqtt Python async client for MQTT client implementation.
+The module has the support of MQTT version 5.0 protocol
 
 ## Badges
 
@@ -19,14 +20,14 @@ Module has support of MQTT version 5.0 protocol
 
 ## Available Features
 
-MQTT  specification avaliable with help decarator methods using callbacks:
+MQTT specification avaliable with help decarator methods using callbacks:
 
--  ```on_connect() ```
--  ```on_disconnect()  ```
--  ```on_subscribe()  ```
--  ```on_message()  ```
+- `on_connect() `
+- `on_disconnect() `
+- `on_subscribe() `
+- `on_message() `
 
-Base Settings available with ```pydantic``` class: 
- 
-- ```Authetication``` to broker with credentials 
-- ```unsubscribe``` certain topics and ```publish``` to certain topics
+Base Settings available with `pydantic` class:
+
+- `Authetication` to broker with credentials
+- `unsubscribe` certain topics and `publish` to certain topics

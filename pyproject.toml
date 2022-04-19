@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "fastapi-mqtt"
+version = "1.0.2"
+description = "fastapi-mqtt is extension for MQTT protocol"
+authors = ["sabuhish <sabuhi.shukurov@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/sabuhish/fastapi-mqtt"
+repository = "https://github.com/sabuhish/fastapi-mqtt"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3 :: Only",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+[tool.poetry.dependencies]
+python = "^3.6.2"
+fastapi = "^0.75.1"
+gmqtt = "^0.6.11"
+uvicorn = "^0.17.6"
+pydantic = "^1.9.0"
+
+[tool.poetry.dev-dependencies]
+isort = "^5.10.1"
+flake8 = "^4.0.1"
+blue = "^0.8.0"
+mypy = "^0.942"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.blue]
+line-length = 100
