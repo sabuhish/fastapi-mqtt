@@ -235,7 +235,7 @@ class FastMQTT:
         async def shutdown():
             await self.client.disconnect()
 
-    def subscribe(self, *topics):
+    def subscribe(self, *topics) -> Callable[..., Any]:
         """
         Decorator method used to subscribe for specific topics.
         """
@@ -262,7 +262,7 @@ class FastMQTT:
 
         return connect_handler
 
-    def on_message(self):
+    def on_message(self) -> Callable[..., Any]:
         """
         The decorator method is used to subscribe to messages from all topics.
         """
@@ -273,7 +273,7 @@ class FastMQTT:
 
         return message_handler
 
-    def on_disconnect(self):
+    def on_disconnect(self) -> Callable[..., Any]:
         """
         The Decorator method used wrap disconnect callback.
         """
@@ -284,7 +284,7 @@ class FastMQTT:
 
         return disconnect_handler
 
-    def on_subscribe(self):
+    def on_subscribe(self) -> Callable[..., Any]:
         """
         Decorator method is used to obtain subscribed topics and properties.
         """
