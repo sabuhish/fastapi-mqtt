@@ -18,8 +18,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 [tool.poetry.dependencies]
-python = "^3.6.2"
-fastapi = "^0.75.1"
+python = "^3.7"
+fastapi = "0.*"
 gmqtt = "^0.6.11"
 uvicorn = "^0.17.6"
 pydantic = "^1.9.0"
