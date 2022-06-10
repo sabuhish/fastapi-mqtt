@@ -145,11 +145,13 @@ class FastMQTT:
         """
         if self.config.reconnect_retries:
             self.client.set_config(
-                reconnect_retries=self.config.reconnect_retries
+#                 reconnect_retries=self.config.reconnect_retries
+                  config=self.config
             )
 
         if self.config.reconnect_delay:
-            self.client.set_config(reconnect_delay=self.config.reconnect_delay)
+#             self.client.set_config(reconnect_delay=self.config.reconnect_delay)
+            self.client.set_config(config=self.config.reconnect_delay)
 
     def __on_connect(self, client, flags, rc, properties) -> None:
         """
