@@ -97,17 +97,13 @@ class FastMQTT:
         topic = topic.split('/')
         template = template.split('/')
 
-        if len(topic) < len(template):
-            return False
-
         topic_idx = 0
-        for _, part in enumerate(template):
+        for part in template:
             if part == '#':
                 return True
-            elif part == '+' or part == topic[topic_idx]:
+            elif part in ['+', topic[topic_idx]]:
                 topic_idx += 1
-                continue
-            elif not part == topic[topic_idx]:
+            else:
                 return False
 
         if topic_idx == len(topic):
