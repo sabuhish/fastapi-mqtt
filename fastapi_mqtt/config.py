@@ -54,4 +54,4 @@ class MQTTConfig(Settings):
 
     will_message_topic: Optional[str] = None
     will_message_payload: Optional[str] = None
-    will_delay_interval: Optional[str] = None
+    will_delay_interval: Optional[int] = None
