@@ -97,17 +97,13 @@ class FastMQTT:
         topic = topic.split('/')
         template = template.split('/')
 
-        if len(topic) < len(template):
-            return False
-
         topic_idx = 0
-        for _, part in enumerate(template):
+        for part in template:
             if part == '#':
                 return True
-            elif part == '+' or part == topic[topic_idx]:
+            elif part in ['+', topic[topic_idx]]:
                 topic_idx += 1
-                continue
-            elif not part == topic[topic_idx]:
+            else:
                 return False
 
         if topic_idx == len(topic):
@@ -117,9 +113,7 @@ class FastMQTT:
     async def connection(self) -> None:
 
         if self.client._username:
-            self.client.set_auth_credentials(
-                self.client._username, self.client._password
-            )
+            self.client.set_auth_credentials(self.client._username, self.client._password)
             log_info.debug('user is authenticated')
 
         await self.__set_connetion_config()
@@ -144,13 +138,9 @@ class FastMQTT:
         For more info: https://github.com/wialon/gmqtt#reconnects
         """
         if self.config.reconnect_retries:
-            self.client.set_config(
-#                 reconnect_retries=self.config.reconnect_retries
-                  config=self.config
-            )
+            self.client.set_config(reconnect_retries=self.config.reconnect_retries)
 
         if self.config.reconnect_delay:
-#             self.client.set_config(reconnect_delay=self.config.reconnect_delay)
             self.client.set_config(config=self.config.reconnect_delay)
 
     def __on_connect(self, client, flags, rc, properties) -> None:
@@ -160,9 +150,7 @@ class FastMQTT:
         It cannot be done earlier, since subscription relies on connection.
         """
         if self.mqtt_handlers.get_user_connect_handler:
-            self.mqtt_handlers.get_user_connect_handler(
-                client, flags, rc, properties
-            )
+            self.mqtt_handlers.get_user_connect_handler(client, flags, rc, properties)
 
         for topic in self.handlers.keys():
             log_info.debug(f'Subscribing for {topic}')
@@ -177,18 +165,14 @@ class FastMQTT:
         if self.mqtt_handlers.get_user_message_handler:
             log_info.debug('Calling user_message_handler')
             gather.append(
-                self.mqtt_handlers.get_user_message_handler(
-                    client, topic, payload, qos, properties
-                )
+                self.mqtt_handlers.get_user_message_handler(client, topic, payload, qos, properties)
             )
 
         for topic_template in self.handlers.keys():
             if self.match(topic, topic_template):
                 log_info.debug(f'Calling specific handler for topic {topic}')
                 for handler in self.handlers[topic_template]:
-                    gather.append(
-                        handler(client, topic, payload, qos, properties)
-                    )
+                    gather.append(handler(client, topic, payload, qos, properties))
 
         return await asyncio.gather(*gather)
 

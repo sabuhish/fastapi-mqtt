@@ -1,5 +1,4 @@
-import re
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from gmqtt import Client as MQTTClient
 
@@ -17,8 +16,8 @@ class MQTTHandlers:
     def __init__(self, client: MQTTClient, handlers: dict):
         self.client = client
         self.handlers = handlers
-        self.user_message_handler = None
-        self.user_connect_handler = None
+        self.user_message_handler: Optional[Callable[..., Any]] = None
+        self.user_connect_handler: Optional[Callable[..., Any]] = None
 
     def on_message(self, handler: Callable) -> Callable[..., Any]:
         log_info.info('on_message handler accepted')
@@ -43,9 +42,9 @@ class MQTTHandlers:
         return handler
 
     @property
-    def get_user_message_handler(self):
+    def get_user_message_handler(self) -> Optional[Callable[..., Any]]:
         return self.user_message_handler
 
     @property
-    def get_user_connect_handler(self):
+    def get_user_connect_handler(self) -> Optional[Callable[..., Any]]:
         return self.user_connect_handler

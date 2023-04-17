@@ -26,6 +26,7 @@ MQTT specification avaliable with help decarator methods using callbacks:
 - on_disconnect()
 - on_subscribe()
 - on_message()
+- subscribe(topic)
 
 - Base Settings available with `pydantic` class
 - Authetication to broker with credentials
@@ -63,6 +64,10 @@ def connect(client, flags, rc, properties):
 @mqtt.on_message()
 async def message(client, topic, payload, qos, properties):
     print("Received message: ",topic, payload.decode(), qos, properties)
+
+@mqtt.subscribe("my/mqtt/topic/#")
+async def message_to_topic(client, topic, payload, qos, properties):
+    print("Received message to specific topic: ", topic, payload.decode(), qos, properties)
 
 @mqtt.on_disconnect()
 def disconnect(client, packet, exc=None):
