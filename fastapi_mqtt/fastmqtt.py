@@ -1,11 +1,11 @@
 import asyncio
 import uuid
 from functools import partial
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from fastapi import FastAPI
 from gmqtt import Client as MQTTClient
-from gmqtt import Message
+from gmqtt import Message, Subscription
 from gmqtt.mqtt.constants import MQTTv50
 
 from .config import MQTTConfig
@@ -67,7 +67,7 @@ class FastMQTT:
         self.client._connect_properties = kwargs
         self.client.on_message = self.__on_message
         self.client.on_connect = self.__on_connect
-        self.handlers: Dict[str, Any] = dict()
+        self.subscriptions: Dict[str, tuple[Subscription, List[Callable]]] = dict()
         self.mqtt_handlers = MQTTHandlers(self.client)
         log_info = logger
 
@@ -152,9 +152,9 @@ class FastMQTT:
         if self.mqtt_handlers.get_user_connect_handler:
             self.mqtt_handlers.get_user_connect_handler(client, flags, rc, properties)
 
-        for topic in self.handlers.keys():
+        for topic in self.subscriptions:
             log_info.debug(f'Subscribing for {topic}')
-            self.client.subscribe(topic)
+            self.client.subscribe(self.subscriptions[topic][0])
 
     async def __on_message(self, client, topic, payload, qos, properties):
         """
@@ -168,10 +168,10 @@ class FastMQTT:
                 self.mqtt_handlers.get_user_message_handler(client, topic, payload, qos, properties)
             )
 
-        for topic_template in self.handlers.keys():
+        for topic_template in self.subscriptions:
             if self.match(topic, topic_template):
                 log_info.debug(f'Calling specific handler for topic {topic}')
-                for handler in self.handlers[topic_template]:
+                for handler in self.subscriptions[topic_template][1]:
                     gather.append(handler(client, topic, payload, qos, properties))
 
         return await asyncio.gather(*gather)
@@ -221,7 +221,15 @@ class FastMQTT:
         async def shutdown():
             await self.client.disconnect()
 
-    def subscribe(self, *topics) -> Callable[..., Any]:
+    def subscribe(
+        self,
+        *topics,
+        qos=0,
+        no_local=False,
+        retain_as_published=False,
+        retain_handling_options=0,
+        subscription_identifier=None,
+    ) -> Callable[..., Any]:
         """
         Decorator method used to subscribe for specific topics.
         """
@@ -229,10 +237,29 @@ class FastMQTT:
         def subscribe_handler(handler: Callable) -> Callable:
             log_info.debug(f'Subscribe for a topics: {topics}')
             for topic in topics:
-                if topic not in self.handlers.keys():
-                    self.handlers[topic] = []
-                # TODO: Consider changing to weak_ref
-                self.handlers[topic].append(handler)
+                subscription = Subscription(
+                    topic,
+                    qos,
+                    no_local,
+                    retain_as_published,
+                    retain_handling_options,
+                    subscription_identifier,
+                )
+                if topic not in self.subscriptions:
+                    self.subscriptions[topic] = (subscription, [handler])
+                else:
+                    old_subscription = self.subscriptions[topic][0]
+
+                    # Use the most restrictive field of the same subscriptions
+                    self.subscription[topic][0] = Subscription(
+                        topic,
+                        max(qos, old_subscription.qos),
+                        no_local or old_subscription.no_local,
+                        retain_as_published or old_subscription.retain_as_published,
+                        max(retain_handling_options, old_subscription.retain_handling_options),
+                        old_subscription.subscription_identifier or subscription_identifier,
+                    )
+                    self.subscription[topic][1].append(handler)
             return handler
 
         return subscribe_handler
