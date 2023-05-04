@@ -68,7 +68,7 @@ class FastMQTT:
         self.client.on_message = self.__on_message
         self.client.on_connect = self.__on_connect
         self.handlers: Dict[str, Any] = dict()
-        self.mqtt_handlers = MQTTHandlers(self.client, self.handlers)
+        self.mqtt_handlers = MQTTHandlers(self.client)
         log_info = logger
 
         if (
