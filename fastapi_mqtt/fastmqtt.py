@@ -207,8 +207,8 @@ class FastMQTT:
         """
         partial(self.client.unsubscribe, topic, **kwargs)
         log_info.debug('unsubscribe')
-        if topic in self.handlers.keys():
-            del self.handlers[topic]
+        if topic in self.subscriptions:
+            del self.subscriptions[topic]
 
         return self.client.unsubscribe(topic, **kwargs)
 
@@ -237,21 +237,20 @@ class FastMQTT:
         def subscribe_handler(handler: Callable) -> Callable:
             log_info.debug(f'Subscribe for a topics: {topics}')
             for topic in topics:
-                subscription = Subscription(
-                    topic,
-                    qos,
-                    no_local,
-                    retain_as_published,
-                    retain_handling_options,
-                    subscription_identifier,
-                )
                 if topic not in self.subscriptions:
+                    subscription = Subscription(
+                        topic,
+                        qos,
+                        no_local,
+                        retain_as_published,
+                        retain_handling_options,
+                        subscription_identifier,
+                    )
                     self.subscriptions[topic] = (subscription, [handler])
                 else:
+                    # Use the most restrictive field of the same subscription
                     old_subscription = self.subscriptions[topic][0]
-
-                    # Use the most restrictive field of the same subscriptions
-                    self.subscription[topic][0] = Subscription(
+                    new_subscription = Subscription(
                         topic,
                         max(qos, old_subscription.qos),
                         no_local or old_subscription.no_local,
@@ -259,7 +258,8 @@ class FastMQTT:
                         max(retain_handling_options, old_subscription.retain_handling_options),
                         old_subscription.subscription_identifier or subscription_identifier,
                     )
-                    self.subscription[topic][1].append(handler)
+                    self.subscriptions[topic] = (new_subscription, self.subscriptions[topic][1])
+                    self.subscriptions[topic][1].append(handler)
             return handler
 
         return subscribe_handler
