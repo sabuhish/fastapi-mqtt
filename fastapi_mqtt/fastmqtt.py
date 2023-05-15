@@ -87,7 +87,7 @@ class FastMQTT:
             log_info.debug('WILL MESSAGE INITIALIZED')
 
     @staticmethod
-    def match(topic, template):
+    def match(topic: str, template: str):
         """
         Defined match topics
 
@@ -143,7 +143,7 @@ class FastMQTT:
         if self.config.reconnect_delay:
             self.client.set_config(reconnect_delay=self.config.reconnect_delay)
 
-    def __on_connect(self, client, flags, rc, properties) -> None:
+    def __on_connect(self, client: MQTTClient, flags: int, rc: int, properties: Any) -> None:
         """
         Generic on connecting handler, it would call user handler if defined.
         Will perform subscription for given topics.
@@ -156,7 +156,9 @@ class FastMQTT:
             log_info.debug(f'Subscribing for {topic}')
             self.client.subscribe(self.subscriptions[topic][0])
 
-    async def __on_message(self, client, topic, payload, qos, properties):
+    async def __on_message(
+        self, client: MQTTClient, topic: str, payload: bytes, qos: int, properties: Any
+    ) -> Any:
         """
         Generic on message handler, it will call user handler if defined.
         This will invoke per topic handlers that are subscribed for
@@ -224,11 +226,11 @@ class FastMQTT:
     def subscribe(
         self,
         *topics,
-        qos=0,
-        no_local=False,
-        retain_as_published=False,
-        retain_handling_options=0,
-        subscription_identifier=None,
+        qos: int = 0,
+        no_local: bool = False,
+        retain_as_published: bool = False,
+        retain_handling_options: int = 0,
+        subscription_identifier: Any = None,
     ) -> Callable[..., Any]:
         """
         Decorator method used to subscribe for specific topics.
