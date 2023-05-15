@@ -1,5 +1,6 @@
 from fastapi_mqtt.config import MQTTConfig
 from fastapi_mqtt.fastmqtt import FastMQTT
+from gmqtt import Client as MQTTClient
 
 __author__ = 'Sabuhi Shukurov'
 
@@ -13,4 +14,4 @@ credits = [
     'Jeremy T. Hetzel',
 ]
 
-__all__ = ['FastMQTT', 'MQTTConfig']
+__all__ = ['FastMQTT', 'MQTTConfig', 'MQTTClient']
