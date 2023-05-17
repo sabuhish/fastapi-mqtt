@@ -79,7 +79,7 @@ class FastMQTT:
             self.client._will_message = Message(
                 self.config.will_message_topic,
                 self.config.will_message_payload,
-                self.config.will_delay_interval,
+                will_delay_interval=self.config.will_delay_interval,
             )
             log_info.debug(
                 f'topic -> {self.config.will_message_topic} \n payload -> {self.config.will_message_payload} \n will_delay_interval -> {self.config.will_delay_interval}'  # noqa E501
