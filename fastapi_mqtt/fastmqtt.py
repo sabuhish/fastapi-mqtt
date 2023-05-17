@@ -137,12 +137,10 @@ class FastMQTT:
         For changing this behavior, set reconnect_retries and reconnect_delay with its values.
         For more info: https://github.com/wialon/gmqtt#reconnects
         """
-        if self.config.reconnect_retries:
-            self.client.set_config(reconnect_retries=self.config.reconnect_retries)
-
-        if self.config.reconnect_delay:
-            self.client.set_config(reconnect_delay=self.config.reconnect_delay)
-
+        self.config.set_config({
+            "reconnect_retries":self.reconnect_retries, 
+            "reconnect_delay": self.reconnect_delay})
+     
     def __on_connect(self, client, flags, rc, properties) -> None:
         """
         Generic on connecting handler, it would call user handler if defined.

@@ -49,8 +49,8 @@ class MQTTConfig(Settings):
     password: Optional[str] = None
     version: int = MQTTv50
 
-    reconnect_retries: Optional[int] = None
-    reconnect_delay: Optional[int] = None
+    reconnect_retries: Optional[int] = 1
+    reconnect_delay: Optional[int] = 6
 
     will_message_topic: Optional[str] = None
     will_message_payload: Optional[str] = None

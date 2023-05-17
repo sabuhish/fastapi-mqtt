@@ -1,4 +1,5 @@
 import pytest
+
 from fastapi_mqtt.fastmqtt import FastMQTT
 
 
