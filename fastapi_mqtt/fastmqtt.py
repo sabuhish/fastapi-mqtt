@@ -137,7 +137,7 @@ class FastMQTT:
         For changing this behavior, set reconnect_retries and reconnect_delay with its values.
         For more info: https://github.com/wialon/gmqtt#reconnects
         """
-        self.config.set_config({
+        self.client.set_config({
             "reconnect_retries":self.reconnect_retries, 
             "reconnect_delay": self.reconnect_delay})
      
