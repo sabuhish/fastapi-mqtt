@@ -138,8 +138,8 @@ class FastMQTT:
         For more info: https://github.com/wialon/gmqtt#reconnects
         """
         self.client.set_config({
-            "reconnect_retries":self.reconnect_retries, 
-            "reconnect_delay": self.reconnect_delay})
+            "reconnect_retries":self.config.reconnect_retries,
+            "reconnect_delay": self.config.reconnect_delay})
      
     def __on_connect(self, client, flags, rc, properties) -> None:
         """
