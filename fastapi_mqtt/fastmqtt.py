@@ -79,7 +79,7 @@ class FastMQTT:
             self.client._will_message = Message(
                 self.config.will_message_topic,
                 self.config.will_message_payload,
-                self.config.will_delay_interval,
+                will_delay_interval=self.config.will_delay_interval,
             )
             log_info.debug(
                 f'topic -> {self.config.will_message_topic} \n payload -> {self.config.will_message_payload} \n will_delay_interval -> {self.config.will_delay_interval}'  # noqa E501
@@ -137,12 +137,10 @@ class FastMQTT:
         For changing this behavior, set reconnect_retries and reconnect_delay with its values.
         For more info: https://github.com/wialon/gmqtt#reconnects
         """
-        if self.config.reconnect_retries:
-            self.client.set_config(reconnect_retries=self.config.reconnect_retries)
-
-        if self.config.reconnect_delay:
-            self.client.set_config(reconnect_delay=self.config.reconnect_delay)
-
+        self.client.set_config({
+            "reconnect_retries":self.config.reconnect_retries,
+            "reconnect_delay": self.config.reconnect_delay})
+     
     def __on_connect(self, client: MQTTClient, flags: int, rc: int, properties: Any) -> None:
         """
         Generic on connecting handler, it would call user handler if defined.
