@@ -1,0 +1,29 @@
+name: Run pytest on FastApi-MQTT Package
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Run Poetry image
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.5.1
+
+      - name: Install library
+        run: poetry install --no-interaction
+
+      - name: Run tests
+        run: poetry run pytest
