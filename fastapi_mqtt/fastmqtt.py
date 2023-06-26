@@ -210,7 +210,7 @@ class FastMQTT:
 
         return self.client.unsubscribe(topic, **kwargs)
 
-    def init_app(self, app: FastAPI) -> None:
+    def init_app(self, app: FastAPI) -> None:  # pragma: no cover
         @app.on_event('startup')
         async def startup():
             await self.connection()

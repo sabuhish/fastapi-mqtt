@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 from contextlib import asynccontextmanager
 
 import pytest
@@ -29,9 +29,7 @@ def test_app():
         username=TEST_BROKER_USER,
         password=TEST_BROKER_PWD,
     )
-    fast_mqtt = FastMQTT(
-        config=mqtt_config
-    )
+    fast_mqtt = FastMQTT(config=mqtt_config)
 
     @asynccontextmanager
     async def _lifespan(application: FastAPI):
@@ -78,7 +76,7 @@ def test_app():
         return {'result': True, 'message': 'Unsubscribed'}
 
     @app.post('/test-reset')
-    async def _pub_msg():
+    async def _reset_msgs():
         fast_mqtt.publish('mqtt')
         fast_mqtt.publish('mqtt/test/humidity')
         return {'result': True, 'message': 'Cleaned'}
