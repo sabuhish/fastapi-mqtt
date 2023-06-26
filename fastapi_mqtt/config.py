@@ -2,7 +2,11 @@ from ssl import SSLContext
 from typing import Optional, Union
 
 from gmqtt.mqtt.constants import MQTTv50
-from pydantic import BaseSettings as Settings
+
+try:
+    from pydantic_settings import BaseSettings as Settings
+except ImportError:
+    from pydantic import BaseSettings as Settings
 
 
 class MQTTConfig(Settings):
