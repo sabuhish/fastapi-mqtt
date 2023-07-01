@@ -11,4 +11,3 @@ lint:
 
 format_code:
 	isort .
-

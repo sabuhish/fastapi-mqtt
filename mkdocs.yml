@@ -1,5 +1,5 @@
 site_name: FastApi-MQTT
-site_url: 
+site_url:
 site_description: fastapi-mqtt is client for MQTT protocol
 dev_addr: 127.0.0.1:8080
 
@@ -9,7 +9,7 @@ theme:
     scheme: slate
     primary: teal
     accent: purple
-  
+
   icon:
     repo: fontawesome/brands/github
 repo_name: fastapi-mqtt
@@ -24,7 +24,7 @@ plugins:
 markdown_extensions:
   - toc:
       permalink: true
-    
+
 nav:
   - FastApi MQTT: index.md
   - 🔨 Installation: install.md
@@ -32,8 +32,3 @@ nav:
   - Example: example.md
   - MQTT: mqtt.md
   - Contribution: contribute.md
-
-
-
-
-

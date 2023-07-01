@@ -18,7 +18,7 @@ Please refer to each project's style and contribution guidelines for submitting 
  1. **Fork** the repo on GitHub
  2. **Clone** the project to your own machine
  3. **Commit** changes to your own branch
- 4. **Push** your work 
+ 4. **Push** your work
  5. Submit a **Pull request** so that we can review your changes
 
 ## Before contributing, here is how to install
@@ -27,15 +27,12 @@ Please refer to each project's style and contribution guidelines for submitting 
 $ bash scripts/install.sh
 $ source .venv/bin/activate
 $ cat main.py
-
 ```
+
 or run fastapi app with uvicorn
 
 ```sh
 uvicorn app:app --port 8000 --reload
-
 ```
-
-
 
 NOTE: Be sure to merge the latest from "upstream" before making a pull request!

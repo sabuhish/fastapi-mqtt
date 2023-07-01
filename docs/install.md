@@ -14,7 +14,3 @@ poetry shell
 
 poetry add fastapi-mqtt
 ```
-
-
-
-

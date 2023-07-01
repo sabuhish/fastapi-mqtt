@@ -9,9 +9,9 @@ function automated_commands(){
         echo ""
         echo -e "Author Sabuhi Shukurov"
         cd "$CURRENT_DIRECTORY/scripts/"
-        bash install.sh 
+        bash install.sh
         cd $CURRENT_DIRECTORY
-        
+
         exit 0
 
     elif [[ "$1" == "-h" || $1 == "--help" ]]; then
@@ -19,7 +19,7 @@ function automated_commands(){
 
         echo ""
         echo -e "Useful Commands:"
-      
+
         echo -e "\t install   Creating virtual environment and installing dependencies"
         echo ""
         echo -e "If you still having problem  please submit issue at: $ISSUE_URL or email me: $EMAIL"

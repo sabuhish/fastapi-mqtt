@@ -16,22 +16,22 @@ echo -e "Staring to create environment and installing dependencies for fastapi-m
 
 function install(){
 
-    sudo -u $CURRENT_USER bash << EOF 
+    sudo -u $CURRENT_USER bash << EOF
         echo -e "\ncreating virtualenv ..."
-       
-        cd .. 
+
+        cd ..
         python3 -m venv .venv
         source .venv/bin/activate
-        
+
         pip install --upgrade pip
 
         echo "installing dependencies"
 
-        pip install "fastapi>=0.61.2" 'uvicorn>=0.12.2' 'gmqtt>=0.6.8'  "pydantic>=1.7.2" 
-         
+        pip install "fastapi>=0.61.2" 'uvicorn>=0.12.2' 'gmqtt>=0.6.8'  "pydantic>=1.7.2"
+
         DIRECTORY=$(pwd)
 
-        touch $DIRECTORY/app.py    
+        touch $DIRECTORY/app.py
 
 echo "
 from fastapi_mqtt.fastmqtt import FastMQTT
@@ -54,7 +54,7 @@ async def shutdown():
 
 @fast_mqtt.on_connect()
 def connect(client, flags, rc, properties):
-    fast_mqtt.client.subscribe('/mqtt') #subscribing mqtt topic 
+    fast_mqtt.client.subscribe('/mqtt') #subscribing mqtt topic
     print('Connected:', client, flags, rc, properties)
 
 @fast_mqtt.on_message()
@@ -72,24 +72,24 @@ def subscribe(client, mid, qos, properties):
 
 @app.get('/')
 async def func():
-    fast_mqtt.publish('/mqtt', 'Hello from Fastapi') #publishing mqtt topic 
+    fast_mqtt.publish('/mqtt', 'Hello from Fastapi') #publishing mqtt topic
 
     return {'result': True,'message':'Published' }" >> app.py
-        
+
         echo ""
         echo -e "fastapi-mqtt: $VERSION"
-      
+
         echo -e "\nYou are ready to work on it, do the last things:"
         echo -e "source .venv/bin/activate"
         echo -e "cat app.py"
-      
+
 
         echo -e "\nPlease see the README file for more information:"
         echo ""
         echo -e "$README_URL\n\n"
         echo -e "You can also run with uvicorn:"
         echo ""
-        echo -e "uvicorn app:app --port 8000 --reload" 
+        echo -e "uvicorn app:app --port 8000 --reload"
         cd $CURRENT_DIRECTORY
         exit 0
 
@@ -97,4 +97,3 @@ EOF
 }
 
 install
-
