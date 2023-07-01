@@ -1,13 +1,5 @@
 lint:
-	@echo
-	isort --diff -c --skip-glob '*.venv' .
-	@echo
-	black .
-	@echo
-	flake8 .
-	@echo
-	mypy --ignore-missing-imports .
-
+	pre-commit run --all-files
 
 format_code:
 	isort .
