@@ -4,9 +4,11 @@ from typing import Optional, Union
 from gmqtt.mqtt.constants import MQTTv50
 
 try:
+    # with pydantic v2, BaseSettings is in its own library
     from pydantic_settings import BaseSettings as Settings
 except ImportError:
-    from pydantic import BaseSettings as Settings
+    # with pydantic v1, BaseSettings is included
+    from pydantic import BaseSettings as Settings  # type: ignore
 
 
 class MQTTConfig(Settings):
