@@ -95,15 +95,15 @@ class FastMQTT:
         topic: topic name
         template: template topic name that contains wildcards
         """
-        topic = topic.split('/')
-        template = template.split('/')
+        topic = topic.split("/")
+        template = template.split("/")
 
         for topic_part, part in zip_longest(topic, template):
-            if part == '#' and not str(topic_part).startswith("$"):
+            if part == "#" and not str(topic_part).startswith("$"):
                 return True
-            elif topic_part is None or part not in {'+', topic_part}:
+            elif topic_part is None or part not in {"+", topic_part}:
                 return False
-            elif part == '+' and topic_part.startswith('$'):
+            elif part == "+" and topic_part.startswith("$"):
                 return False
             continue
 
