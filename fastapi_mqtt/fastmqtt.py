@@ -1,6 +1,7 @@
 import asyncio
 import uuid
 from functools import partial
+from itertools import zip_longest
 from typing import Any, Callable, Dict, Optional
 
 from fastapi import FastAPI
@@ -94,22 +95,19 @@ class FastMQTT:
         topic: topic name
         template: template topic name that contains wildcards
         """
-        topic = topic.split("/")
-        template = template.split("/")
+        topic = topic.split('/')
+        template = template.split('/')
 
-        topic_idx = 0
-        for part in template:
-            if part == "#":
+        for topic_part, part in zip_longest(topic, template):
+            if part == '#' and not str(topic_part).startswith("$"):
                 return True
-            elif len(topic) > topic_idx:
-                if part in ["+", topic[topic_idx]]:
-                    topic_idx += 1
-            else:
+            elif topic_part is None or part not in {'+', topic_part}:
                 return False
+            elif part == '+' and topic_part.startswith('$'):
+                return False
+            continue
 
-        if topic_idx == len(topic):
-            return True
-        return False
+        return len(template) == len(topic)
 
     async def connection(self) -> None:
         if self.client._username:
