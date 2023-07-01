@@ -29,6 +29,10 @@ isort = "^5.10.1"
 flake8 = "^4.0.1"
 blue = "^0.9.0"
 mypy = "^0.942"
+pytest = ">=7.0.0"
+pytest-cov = ">=3.0.0"
+pytest-asyncio = ">=0.16.0"
+async-asgi-testclient = ">=1.4.11"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -37,6 +41,22 @@ build-backend = "poetry.core.masonry.api"
 [tool.isort]
 profile = "black"
 line_length = 100
+
+[tool.pytest.ini_options]
+minversion = 7.0
+asyncio_mode = "auto"
+addopts = "--cov fastapi_mqtt --cov-report term --cov-report html"
+testpaths = "tests"
+log_cli = true
+
+[tool.coverage.report]
+fail_under = 75
+skip_covered = false
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "except ImportError:",
+]
 
 [tool.blue]
 line-length = 100
