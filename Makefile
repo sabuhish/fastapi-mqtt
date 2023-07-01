@@ -2,7 +2,7 @@ lint:
 	@echo
 	isort --diff -c --skip-glob '*.venv' .
 	@echo
-	blue --check --diff --color .
+	black .
 	@echo
 	flake8 .
 	@echo
@@ -11,5 +11,4 @@ lint:
 
 format_code:
 	isort .
-	blue .
 

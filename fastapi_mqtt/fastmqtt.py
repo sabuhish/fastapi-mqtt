@@ -82,9 +82,9 @@ class FastMQTT:
                 will_delay_interval=self.config.will_delay_interval,
             )
             log_info.debug(
-                f'topic -> {self.config.will_message_topic} \n payload -> {self.config.will_message_payload} \n will_delay_interval -> {self.config.will_delay_interval}'  # noqa E501
+                f"topic -> {self.config.will_message_topic} \n payload -> {self.config.will_message_payload} \n will_delay_interval -> {self.config.will_delay_interval}"  # noqa E501
             )
-            log_info.debug('WILL MESSAGE INITIALIZED')
+            log_info.debug("WILL MESSAGE INITIALIZED")
 
     @staticmethod
     def match(topic, template):
@@ -94,15 +94,16 @@ class FastMQTT:
         topic: topic name
         template: template topic name that contains wildcards
         """
-        topic = topic.split('/')
-        template = template.split('/')
+        topic = topic.split("/")
+        template = template.split("/")
 
         topic_idx = 0
         for part in template:
-            if part == '#':
+            if part == "#":
                 return True
-            elif part in ['+', topic[topic_idx]]:
-                topic_idx += 1
+            elif len(topic) > topic_idx:
+                if part in ["+", topic[topic_idx]]:
+                    topic_idx += 1
             else:
                 return False
 
@@ -111,15 +112,16 @@ class FastMQTT:
         return False
 
     async def connection(self) -> None:
-
         if self.client._username:
-            self.client.set_auth_credentials(self.client._username, self.client._password)
-            log_info.debug('user is authenticated')
+            self.client.set_auth_credentials(
+                self.client._username, self.client._password
+            )
+            log_info.debug("user is authenticated")
 
         await self.__set_connetion_config()
 
         version = self.config.version or MQTTv50
-        log_info.warning(f'Used broker version is {version}')
+        log_info.warning(f"Used broker version is {version}")
 
         await self.client.connect(
             self.client._host,
@@ -128,7 +130,7 @@ class FastMQTT:
             self.client._keepalive,
             version,
         )
-        log_info.debug('connected to broker..')
+        log_info.debug("connected to broker..")
 
     async def __set_connetion_config(self) -> None:
         """
@@ -137,10 +139,13 @@ class FastMQTT:
         For changing this behavior, set reconnect_retries and reconnect_delay with its values.
         For more info: https://github.com/wialon/gmqtt#reconnects
         """
-        self.client.set_config({
-            "reconnect_retries":self.config.reconnect_retries,
-            "reconnect_delay": self.config.reconnect_delay})
-     
+        self.client.set_config(
+            {
+                "reconnect_retries": self.config.reconnect_retries,
+                "reconnect_delay": self.config.reconnect_delay,
+            }
+        )
+
     def __on_connect(self, client, flags, rc, properties) -> None:
         """
         Generic on connecting handler, it would call user handler if defined.
@@ -151,7 +156,7 @@ class FastMQTT:
             self.mqtt_handlers.get_user_connect_handler(client, flags, rc, properties)
 
         for topic in self.handlers.keys():
-            log_info.debug(f'Subscribing for {topic}')
+            log_info.debug(f"Subscribing for {topic}")
             self.client.subscribe(topic)
 
     async def __on_message(self, client, topic, payload, qos, properties):
@@ -161,14 +166,16 @@ class FastMQTT:
         """
         gather = []
         if self.mqtt_handlers.get_user_message_handler:
-            log_info.debug('Calling user_message_handler')
+            log_info.debug("Calling user_message_handler")
             gather.append(
-                self.mqtt_handlers.get_user_message_handler(client, topic, payload, qos, properties)
+                self.mqtt_handlers.get_user_message_handler(
+                    client, topic, payload, qos, properties
+                )
             )
 
         for topic_template in self.handlers.keys():
             if self.match(topic, topic_template):
-                log_info.debug(f'Calling specific handler for topic {topic}')
+                log_info.debug(f"Calling specific handler for topic {topic}")
                 for handler in self.handlers[topic_template]:
                     gather.append(handler(client, topic, payload, qos, properties))
 
@@ -204,18 +211,18 @@ class FastMQTT:
         topic: topic name
         """
         partial(self.client.unsubscribe, topic, **kwargs)
-        log_info.debug('unsubscribe')
+        log_info.debug("unsubscribe")
         if topic in self.handlers.keys():
             del self.handlers[topic]
 
         return self.client.unsubscribe(topic, **kwargs)
 
     def init_app(self, app: FastAPI) -> None:  # pragma: no cover
-        @app.on_event('startup')
+        @app.on_event("startup")
         async def startup():
             await self.connection()
 
-        @app.on_event('shutdown')
+        @app.on_event("shutdown")
         async def shutdown():
             await self.client.disconnect()
 
@@ -225,7 +232,7 @@ class FastMQTT:
         """
 
         def subscribe_handler(handler: Callable) -> Callable:
-            log_info.debug(f'Subscribe for a topics: {topics}')
+            log_info.debug(f"Subscribe for a topics: {topics}")
             for topic in topics:
                 if topic not in self.handlers.keys():
                     self.handlers[topic] = []
@@ -241,7 +248,7 @@ class FastMQTT:
         """
 
         def connect_handler(handler: Callable) -> Callable:
-            log_info.debug('handler accepted')
+            log_info.debug("handler accepted")
             return self.mqtt_handlers.on_connect(handler)
 
         return connect_handler
@@ -252,7 +259,7 @@ class FastMQTT:
         """
 
         def message_handler(handler: Callable) -> Callable:
-            log_info.debug('on_message handler accepted')
+            log_info.debug("on_message handler accepted")
             return self.mqtt_handlers.on_message(handler)
 
         return message_handler
@@ -263,7 +270,7 @@ class FastMQTT:
         """
 
         def disconnect_handler(handler: Callable) -> Callable:
-            log_info.debug('on_disconnect handler accepted')
+            log_info.debug("on_disconnect handler accepted")
             return self.mqtt_handlers.on_disconnect(handler)
 
         return disconnect_handler
@@ -274,7 +281,7 @@ class FastMQTT:
         """
 
         def subscribe_handler(handler: Callable):
-            log_info.debug('on_subscribe handler accepted')
+            log_info.debug("on_subscribe handler accepted")
             return self.mqtt_handlers.on_subscribe(handler)
 
         return subscribe_handler

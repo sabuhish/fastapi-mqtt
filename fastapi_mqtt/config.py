@@ -41,7 +41,7 @@ class MQTTConfig(Settings):
     will_delay_interval: Delay interval
     """
 
-    host: str = 'localhost'
+    host: str = "localhost"
     port: int = 1883
     ssl: Union[bool, SSLContext] = False
     keepalive: int = 60

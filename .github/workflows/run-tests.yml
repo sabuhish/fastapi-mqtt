@@ -1,9 +1,6 @@
 name: Run pytest on FastApi-MQTT Package
-on:
-  pull_request:
-  push:
-    branches:
-      - master
+
+on: [push, pull_request]
 
 jobs:
   tests:
