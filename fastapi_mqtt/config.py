@@ -39,7 +39,7 @@ class MQTTConfig(BaseModel):
     will_message_topic: Topic of the payload
     will_message_payload: The payload
     will_delay_interval: Delay interval
-    """
+    """  # noqa E501
 
     host: str = "localhost"
     port: int = 1883

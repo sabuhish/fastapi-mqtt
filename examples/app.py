@@ -5,9 +5,7 @@ from fastapi_mqtt.fastmqtt import FastMQTT
 
 mqtt_config = MQTTConfig()
 
-fast_mqtt = FastMQTT(
-    config=mqtt_config
-)
+fast_mqtt = FastMQTT(config=mqtt_config)
 
 app = FastAPI()
 fast_mqtt.init_app(app)

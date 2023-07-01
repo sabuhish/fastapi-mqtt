@@ -39,7 +39,7 @@ class FastMQTT:
                             The client_id  identifies the session.
 
     optimistic_acknowledgement:  #TODO more info needed
-    """
+    """  # noqa E501
 
     def __init__(
         self,
@@ -113,9 +113,7 @@ class FastMQTT:
 
     async def connection(self) -> None:
         if self.client._username:
-            self.client.set_auth_credentials(
-                self.client._username, self.client._password
-            )
+            self.client.set_auth_credentials(self.client._username, self.client._password)
             log_info.debug("user is authenticated")
 
         await self.__set_connetion_config()
@@ -138,8 +136,7 @@ class FastMQTT:
         The number of reconnect attempts is unlimited.
         For changing this behavior, set reconnect_retries and reconnect_delay with its values.
         For more info: https://github.com/wialon/gmqtt#reconnects
-        """
-
+        """  # noqa E501
         self.client.set_config(
             {
                 "reconnect_retries": self.config.reconnect_retries,
@@ -173,9 +170,7 @@ class FastMQTT:
         if self.mqtt_handlers.get_user_message_handler:
             log_info.debug("Calling user_message_handler")
             gather.append(
-                self.mqtt_handlers.get_user_message_handler(
-                    client, topic, payload, qos, properties
-                )
+                self.mqtt_handlers.get_user_message_handler(client, topic, payload, qos, properties)
             )
 
         for topic_template in self.subscriptions:

@@ -12,7 +12,7 @@ from fastapi_mqtt.config import MQTTConfig
 from fastapi_mqtt.fastmqtt import FastMQTT
 
 # Run MQTT broker in background for tests with:
-# `docker run -d --name mosquitto -p 9001:9001 -p 1883:1883 eclipse-mosquitto:1.6.15`
+# `docker run -d -p 9001:9001 -p 1883:1883 eclipse-mosquitto:1.6.15`
 # set `TEST_BROKER_HOST=localhost` to use against a local broker
 TEST_BROKER_HOST = os.getenv("TEST_BROKER_HOST", default="test.mosquitto.org")
 TEST_BROKER_USER = "testuser" if TEST_BROKER_HOST != "test.mosquitto.org" else None
@@ -83,7 +83,11 @@ def test_app():
         """Universal handler for all messages received."""
         received_msgs[topic] += 1
         logging.info(
-            "Received message: %s %s %s %s", topic, payload.decode(), qos, properties
+            "Received message: %s %s %s %s",
+            topic,
+            payload.decode(),
+            qos,
+            properties,
         )
         return 0
 
