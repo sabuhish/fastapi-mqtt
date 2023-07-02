@@ -7,6 +7,7 @@ source .venv/bin/activate
 
 pip install fastapi-mqtt
 ```
+
 Alternatively, if you prefer to use `poetry` for package dependencies:
 
 ```bash

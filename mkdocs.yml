@@ -14,12 +14,12 @@ theme:
     repo: fontawesome/brands/github
 repo_name: fastapi-mqtt
 repo_url: https://github.com/sabuhish/fastapi-mqtt
-edit_uri: ''
+edit_uri: ""
 
 plugins:
-- search
-- markdownextradata:
-    data: data
+  - search
+  - markdownextradata:
+      data: data
 
 markdown_extensions:
   - toc:

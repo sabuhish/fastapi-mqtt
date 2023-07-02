@@ -9,9 +9,9 @@ jobs:
       - name: Start Mosquitto MQTT broker
         uses: namoshek/mosquitto-github-action@v1
         with:
-          version: '1.6.15'
-          ports: '1883:1883 9001:9001'
-          container-name: 'mqtt'
+          version: "1.6.15"
+          ports: "1883:1883 9001:9001"
+          container-name: "mqtt"
 
       - name: Check out repository
         uses: actions/checkout@v3
