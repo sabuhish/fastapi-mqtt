@@ -2,7 +2,7 @@ import asyncio
 import uuid
 from functools import partial
 from itertools import zip_longest
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from fastapi import FastAPI
 from gmqtt import Client as MQTTClient
@@ -68,7 +68,7 @@ class FastMQTT:
         self.client._connect_properties = kwargs
         self.client.on_message = self.__on_message
         self.client.on_connect = self.__on_connect
-        self.subscriptions: Dict[str, tuple[Subscription, List[Callable]]] = dict()
+        self.subscriptions: Dict[str, Tuple[Subscription, List[Callable]]] = dict()
         self.mqtt_handlers = MQTTHandlers(self.client)
         log_info = logger
 
