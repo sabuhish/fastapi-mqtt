@@ -1,6 +1,4 @@
-
 name: Upload FastApi-MQTT Package
-
 
 on:
   release:

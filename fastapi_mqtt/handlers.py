@@ -19,7 +19,7 @@ class MQTTHandlers:
         self.user_connect_handler: Optional[Callable[..., Any]] = None
 
     def on_message(self, handler: Callable) -> Callable[..., Any]:
-        log_info.info('on_message handler accepted')
+        log_info.info("on_message handler accepted")
         self.user_message_handler = handler
         return handler
 
@@ -27,7 +27,7 @@ class MQTTHandlers:
         """
         Decorator method is used to obtain subscribed topics and properties.
         """
-        log_info.info('on_subscribe handler accepted')
+        log_info.info("on_subscribe handler accepted")
         self.client.on_subscribe = handler
         return handler
 
@@ -36,7 +36,7 @@ class MQTTHandlers:
         return handler
 
     def on_connect(self, handler: Callable) -> Callable[..., Any]:
-        log_info.info('on_connect handler accepted')
+        log_info.info("on_connect handler accepted")
         self.user_connect_handler = handler
         return handler
 
