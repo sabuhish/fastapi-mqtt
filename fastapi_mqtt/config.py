@@ -2,7 +2,7 @@ from ssl import SSLContext
 from typing import Optional, Union
 
 from gmqtt.mqtt.constants import MQTTv50
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class MQTTConfig(BaseModel):
@@ -56,5 +56,4 @@ class MQTTConfig(BaseModel):
     will_message_payload: Optional[str] = None
     will_delay_interval: Optional[int] = None
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
