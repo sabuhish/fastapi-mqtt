@@ -2,11 +2,11 @@ import asyncio
 import uuid
 from functools import partial
 from itertools import zip_longest
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from fastapi import FastAPI
 from gmqtt import Client as MQTTClient
-from gmqtt import Message
+from gmqtt import Message, Subscription
 from gmqtt.mqtt.constants import MQTTv50
 
 from .config import MQTTConfig
@@ -68,8 +68,8 @@ class FastMQTT:
         self.client._connect_properties = kwargs
         self.client.on_message = self.__on_message
         self.client.on_connect = self.__on_connect
-        self.handlers: Dict[str, Any] = dict()
-        self.mqtt_handlers = MQTTHandlers(self.client, self.handlers)
+        self.subscriptions: Dict[str, Tuple[Subscription, List[Callable]]] = dict()
+        self.mqtt_handlers = MQTTHandlers(self.client)
         log_info = logger
 
         if (
@@ -95,15 +95,15 @@ class FastMQTT:
         topic: topic name
         template: template topic name that contains wildcards
         """
-        topic = topic.split('/')
-        template = template.split('/')
+        topic = topic.split("/")
+        template = template.split("/")
 
         for topic_part, part in zip_longest(topic, template):
-            if part == '#' and not str(topic_part).startswith("$"):
+            if part == "#" and not str(topic_part).startswith("$"):
                 return True
-            elif topic_part is None or part not in {'+', topic_part}:
+            elif topic_part is None or part not in {"+", topic_part}:
                 return False
-            elif part == '+' and topic_part.startswith('$'):
+            elif part == "+" and topic_part.startswith("$"):
                 return False
             continue
 
@@ -137,6 +137,7 @@ class FastMQTT:
         For changing this behavior, set reconnect_retries and reconnect_delay with its values.
         For more info: https://github.com/wialon/gmqtt#reconnects
         """
+
         self.client.set_config(
             {
                 "reconnect_retries": self.config.reconnect_retries,
@@ -144,7 +145,9 @@ class FastMQTT:
             }
         )
 
-    def __on_connect(self, client, flags, rc, properties) -> None:
+    def __on_connect(
+        self, client: MQTTClient, flags: int, rc: int, properties: Any
+    ) -> None:
         """
         Generic on connecting handler, it would call user handler if defined.
         Will perform subscription for given topics.
@@ -153,11 +156,13 @@ class FastMQTT:
         if self.mqtt_handlers.get_user_connect_handler:
             self.mqtt_handlers.get_user_connect_handler(client, flags, rc, properties)
 
-        for topic in self.handlers.keys():
+        for topic in self.subscriptions:
             log_info.debug(f"Subscribing for {topic}")
-            self.client.subscribe(topic)
+            self.client.subscribe(self.subscriptions[topic][0])
 
-    async def __on_message(self, client, topic, payload, qos, properties):
+    async def __on_message(
+        self, client: MQTTClient, topic: str, payload: bytes, qos: int, properties: Any
+    ) -> Any:
         """
         Generic on message handler, it will call user handler if defined.
         This will invoke per topic handlers that are subscribed for
@@ -171,10 +176,10 @@ class FastMQTT:
                 )
             )
 
-        for topic_template in self.handlers.keys():
+        for topic_template in self.subscriptions:
             if self.match(topic, topic_template):
                 log_info.debug(f"Calling specific handler for topic {topic}")
-                for handler in self.handlers[topic_template]:
+                for handler in self.subscriptions[topic_template][1]:
                     gather.append(handler(client, topic, payload, qos, properties))
 
         return await asyncio.gather(*gather)
@@ -210,8 +215,8 @@ class FastMQTT:
         """
         partial(self.client.unsubscribe, topic, **kwargs)
         log_info.debug("unsubscribe")
-        if topic in self.handlers.keys():
-            del self.handlers[topic]
+        if topic in self.subscriptions:
+            del self.subscriptions[topic]
 
         return self.client.unsubscribe(topic, **kwargs)
 
@@ -224,7 +229,15 @@ class FastMQTT:
         async def shutdown():
             await self.client.disconnect()
 
-    def subscribe(self, *topics) -> Callable[..., Any]:
+    def subscribe(
+        self,
+        *topics,
+        qos: int = 0,
+        no_local: bool = False,
+        retain_as_published: bool = False,
+        retain_handling_options: int = 0,
+        subscription_identifier: Any = None,
+    ) -> Callable[..., Any]:
         """
         Decorator method used to subscribe for specific topics.
         """
@@ -232,10 +245,36 @@ class FastMQTT:
         def subscribe_handler(handler: Callable) -> Callable:
             log_info.debug(f"Subscribe for a topics: {topics}")
             for topic in topics:
-                if topic not in self.handlers.keys():
-                    self.handlers[topic] = []
-                # TODO: Consider changing to weak_ref
-                self.handlers[topic].append(handler)
+                if topic not in self.subscriptions:
+                    subscription = Subscription(
+                        topic,
+                        qos,
+                        no_local,
+                        retain_as_published,
+                        retain_handling_options,
+                        subscription_identifier,
+                    )
+                    self.subscriptions[topic] = (subscription, [handler])
+                else:
+                    # Use the most restrictive field of the same subscription
+                    old_subscription = self.subscriptions[topic][0]
+                    new_subscription = Subscription(
+                        topic,
+                        max(qos, old_subscription.qos),
+                        no_local or old_subscription.no_local,
+                        retain_as_published or old_subscription.retain_as_published,
+                        max(
+                            retain_handling_options,
+                            old_subscription.retain_handling_options,
+                        ),
+                        old_subscription.subscription_identifier
+                        or subscription_identifier,
+                    )
+                    self.subscriptions[topic] = (
+                        new_subscription,
+                        self.subscriptions[topic][1],
+                    )
+                    self.subscriptions[topic][1].append(handler)
             return handler
 
         return subscribe_handler

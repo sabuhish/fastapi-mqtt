@@ -13,9 +13,8 @@ except ImportError:
 
 
 class MQTTHandlers:
-    def __init__(self, client: MQTTClient, handlers: dict):
+    def __init__(self, client: MQTTClient):
         self.client = client
-        self.handlers = handlers
         self.user_message_handler: Optional[Callable[..., Any]] = None
         self.user_connect_handler: Optional[Callable[..., Any]] = None
 
