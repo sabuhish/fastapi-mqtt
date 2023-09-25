@@ -32,7 +32,7 @@ $ cat main.py
 or
 
 ```
-or run fastapi app with uvicron
+or run fastapi app with uvicorn
 
 ```sh
 uvicorn app:app --port 8000 --reload
