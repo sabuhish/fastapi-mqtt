@@ -1,14 +1,14 @@
-Contributing to fastapi-mail
+Contributing to fastapi-mqtt
 =========================================
 
-We welcome contributions to [fastapi-mail](https://github.com/sabuhish/fastapi-mail)
+We welcome contributions to [fastapi-mqtt](https://github.com/sabuhish/fastapi-mqtt)
 
 Issues
 ------
 
 Feel free to submit issues and enhancement requests.
 
-[Fatapi-Mail Issues](https://github.com/sabuhish/fastapi-mail/issues)
+[Fastapi-MQTT Issues](https://github.com/sabuhish/fastapi-mqtt/issues)
 
 Contributing
 ------------
@@ -21,7 +21,7 @@ Please refer to each project's style and contribution guidelines for submitting 
  4. **Push** your work 
  5. Submit a **Pull request** so that we can review your changes
 
-
+<!-- FIXME: What does this title mean? I dont get it :P-->
 ### Before get in to the repo and type
 
 
