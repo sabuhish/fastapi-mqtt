@@ -64,7 +64,7 @@ client has the following parameters. The class object holds session information 
 
 - config: MQTTConfig config object
 
--client_id: Should be a unique identifier for connection to the MQTT broker.
+- client_id: Should be a unique identifier for connection to the MQTT broker.
 
 - clean_session: Enables broker to establish a persistent session.
                         In a persistent session clean_session = False.
