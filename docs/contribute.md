@@ -21,15 +21,12 @@ Please refer to each project's style and contribution guidelines for submitting 
  4. **Push** your work 
  5. Submit a **Pull request** so that we can review your changes
 
-<!-- FIXME: What does this title mean? I dont get it :P-->
-### Before get in to the repo and type
-
+## Before contributing, here is how to install
 
 ```sh
-$ bash install.sh   
+$ bash scripts/install.sh
 $ source .venv/bin/activate
 $ cat main.py
-or
 
 ```
 or run fastapi app with uvicorn
