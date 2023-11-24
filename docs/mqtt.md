@@ -4,7 +4,7 @@ Short information about Message Queuing Telemetry Transport
 
 We will cover some basics and later on will dive in advance.
 This information is for beginners and for those who want to gain more knowledge.
-If you don't have any knowledge of what MQQT does, go ahead you will get much more.
+If you don't have any knowledge of what MQTT does, go ahead you will get much more.
 
 `MQTT` stands for Message Queuing Telemetry Transport. The protocol was invented by IBM to facilitate machine-to-machine communication. It works on the publish and subscribe model to ensure efficient communication across platforms, and also has a level system for message priority. Currently, this protocol is widely used for IoT and large-scale communication because of its small footprint and minimal bandwidth consumption.
 
