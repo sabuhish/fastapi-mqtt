@@ -144,9 +144,7 @@ class FastMQTT:
             }
         )
 
-    def __on_connect(
-        self, client: MQTTClient, flags: int, rc: int, properties: Any
-    ) -> None:
+    def __on_connect(self, client: MQTTClient, flags: int, rc: int, properties: Any) -> None:
         """
         Generic on connecting handler, it would call user handler if defined.
         Will perform subscription for given topics.
@@ -273,8 +271,7 @@ class FastMQTT:
                             retain_handling_options,
                             old_subscription.retain_handling_options,
                         ),
-                        old_subscription.subscription_identifier
-                        or subscription_identifier,
+                        old_subscription.subscription_identifier or subscription_identifier,
                     )
                     self.subscriptions[topic] = (
                         new_subscription,
