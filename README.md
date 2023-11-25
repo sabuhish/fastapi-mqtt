@@ -35,35 +35,31 @@ MQTT specification avaliable with help decarator methods using callbacks:
 ### 🔨 Installation
 
 ```sh
- $ pip install fastapi-mqtt
+pip install fastapi-mqtt
 ```
 
 ### 🕹 Guide
 
 ```python
 from fastapi import FastAPI
+
 from fastapi_mqtt import FastMQTT, MQTTConfig
 
 app = FastAPI()
 
 mqtt_config = MQTTConfig()
-
-mqtt = FastMQTT(
-    config=mqtt_config
-)
-
+mqtt = FastMQTT(config=mqtt_config)
 mqtt.init_app(app)
-
 
 
 @mqtt.on_connect()
 def connect(client, flags, rc, properties):
-    mqtt.client.subscribe("/mqtt") #subscribing mqtt topic
+    mqtt.client.subscribe("/mqtt")  # subscribing mqtt topic
     print("Connected: ", client, flags, rc, properties)
 
 @mqtt.on_message()
 async def message(client, topic, payload, qos, properties):
-    print("Received message: ",topic, payload.decode(), qos, properties)
+    print("Received message: ", topic, payload.decode(), qos, properties)
 
 @mqtt.subscribe("my/mqtt/topic/#")
 async def message_to_topic(client, topic, payload, qos, properties):
@@ -71,7 +67,10 @@ async def message_to_topic(client, topic, payload, qos, properties):
 
 @mqtt.subscribe("my/mqtt/topic/#", qos=2)
 async def message_to_topic_with_high_qos(client, topic, payload, qos, properties):
-    print("Received message to specific topic and QoS=2: ", topic, payload.decode(), qos, properties)
+    print(
+        "Received message to specific topic and QoS=2: ", topic, payload.decode(), qos, properties
+    )
+
 
 @mqtt.on_disconnect()
 def disconnect(client, packet, exc=None):
@@ -80,57 +79,53 @@ def disconnect(client, packet, exc=None):
 @mqtt.on_subscribe()
 def subscribe(client, mid, qos, properties):
     print("subscribed", client, mid, qos, properties)
-
 ```
 
 Publish method:
 
 ```python
 async def func():
-    mqtt.publish("/mqtt", "Hello from Fastapi") #publishing mqtt topic
-
-    return {"result": True,"message":"Published" }
-
-
+    mqtt.publish("/mqtt", "Hello from Fastapi")  # publishing mqtt topic
+    return {"result": True, "message": "Published"}
 ```
 
 Subscribe method:
 
 ```python
-
 @mqtt.on_connect()
 def connect(client, flags, rc, properties):
-    mqtt.client.subscribe("/mqtt") #subscribing mqtt topic
+    mqtt.client.subscribe("/mqtt")  # subscribing mqtt topic
     print("Connected: ", client, flags, rc, properties)
-
 ```
 
 Changing connection params
 
 ```python
-mqtt_config = MQTTConfig(host = "mqtt.mosquito.org",
-    port= 1883,
-    keepalive = 60,
+mqtt_config = MQTTConfig(
+    host="mqtt.mosquito.org",
+    port=1883,
+    keepalive=60,
     username="username",
-    password="strong_password")
+    password="strong_password",
+)
 
-
-mqtt = FastMQTT(
-    config=mqtt_config)
-
+mqtt = FastMQTT(config=mqtt_config)
 ```
 
 ### ✅ Testing
 
 - Clone the repository and install it with [`poetry`](https://python-poetry.org).
 - Run tests with `pytest`, using an external MQTT broker to connect (defaults to 'test.mosquitto.org').
+- Explore the fastapi app **examples** and run them with uvicorn
 
-  ```sh
-  # (opc) Run a local mosquitto MQTT broker with docker
-  docker run -d --name mosquitto -p 9001:9001 -p 1883:1883 eclipse-mosquitto:1.6.15
-  # Set host for test broker when running pytest
-  TEST_BROKER_HOST=localhost pytest
-  ```
+```sh
+# (opc) Run a local mosquitto MQTT broker with docker
+docker run -d --name mosquitto -p 9001:9001 -p 1883:1883 eclipse-mosquitto:1.6.15
+# Set host for test broker when running pytest
+TEST_BROKER_HOST=localhost pytest
+# Run example app against local broker
+TEST_BROKER_HOST=localhost uvicorn examples.app:app --port 8000 --reload
+```
 
 # Contributing
 
