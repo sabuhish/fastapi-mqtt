@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-mqtt"
-version = "2.0.0"
+version = "2.0.1"
 description = "fastapi-mqtt is extension for MQTT protocol"
 authors = ["sabuhish <sabuhi.shukurov@gmail.com>"]
 license = "MIT"
@@ -28,10 +28,7 @@ pydantic = ">=2.3.0"
 uvicorn = ">=0.19.0"
 
 [tool.poetry.dev-dependencies]
-pre-commit = ">=2.9.2"
-black = ">=23.3.0"
-isort = ">=5.10.1"
-mypy = ">=0.942"
+pre-commit = ">=2.9.2,<3"
 pytest = ">=7.0.0"
 pytest-cov = ">=3.0.0"
 pytest-asyncio = ">=0.16.0"
