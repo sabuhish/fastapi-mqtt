@@ -122,14 +122,15 @@ mqtt = FastMQTT(
 
 ### ✅ Testing
 
-Run tests with `pytest`, using an external MQTT broker to connect (defaults to 'test.mosquitto.org').
+- Clone the repository and install it with [`poetry`](https://python-poetry.org).
+- Run tests with `pytest`, using an external MQTT broker to connect (defaults to 'test.mosquitto.org').
 
-```sh
- # (opc) Run a local mosquitto MQTT broker with docker
- $ docker run -d --name mosquitto -p 9001:9001 -p 1883:1883 eclipse-mosquitto:1.6.15
- # Set host for test broker when running pytest
- $ TEST_BROKER_HOST=localhost pytest
-```
+  ```sh
+  # (opc) Run a local mosquitto MQTT broker with docker
+  docker run -d --name mosquitto -p 9001:9001 -p 1883:1883 eclipse-mosquitto:1.6.15
+  # Set host for test broker when running pytest
+  TEST_BROKER_HOST=localhost pytest
+  ```
 
 # Contributing
 
