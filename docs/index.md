@@ -5,7 +5,7 @@
 MQTT is a lightweight publish/subscribe messaging protocol designed for M2M (machine to machine) telemetry in low bandwidth environments.
 Fastapi-mqtt is the client for working with MQTT.
 
-For more information about MQQT, please refer to here: [MQTT](mqtt.md)
+For more information about MQTT, please refer to here: [MQTT](mqtt.md)
 
 Fatapi-mqtt wraps around [gmqtt](https://github.com/wialon/gmqtt) module. Gmqtt Python async client for MQTT client implementation.
 The module has the support of MQTT version 5.0 protocol

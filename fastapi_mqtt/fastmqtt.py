@@ -1,6 +1,5 @@
 import asyncio
 import uuid
-from functools import partial
 from itertools import zip_longest
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
@@ -213,21 +212,30 @@ class FastMQTT:
 
         topic: topic name
         """
-        partial(self.client.unsubscribe, topic, **kwargs)
         log_info.debug("unsubscribe")
         if topic in self.subscriptions:
             del self.subscriptions[topic]
 
         return self.client.unsubscribe(topic, **kwargs)
 
+    async def mqtt_startup(self):
+        """Initial connection for MQTT client, for lifespan startup."""
+        await self.connection()
+
+    async def mqtt_shutdown(self):
+        """Final disconnection for MQTT client, for lifespan shutdown."""
+        await self.client.disconnect()
+
     def init_app(self, app: FastAPI) -> None:  # pragma: no cover
+        """Add startup and shutdown event handlers for app without lifespan."""
+
         @app.on_event("startup")
         async def startup():
-            await self.connection()
+            await self.mqtt_startup()
 
         @app.on_event("shutdown")
         async def shutdown():
-            await self.client.disconnect()
+            await self.mqtt_shutdown()
 
     def subscribe(
         self,

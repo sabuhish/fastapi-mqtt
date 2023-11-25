@@ -33,10 +33,10 @@ def test_app():
 
     @asynccontextmanager
     async def _lifespan(application: FastAPI):
-        await fast_mqtt.connection()
+        await fast_mqtt.mqtt_startup()
         logging.info("connection done, starting fastapi app now")
         yield
-        await fast_mqtt.client.disconnect()
+        await fast_mqtt.mqtt_shutdown()
 
     app = FastAPI(lifespan=_lifespan)
 
