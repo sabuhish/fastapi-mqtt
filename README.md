@@ -5,7 +5,7 @@ Fastapi-mqtt is the client for working with MQTT.
 
 For more information about MQTT, please refer to here: [MQTT](MQTT.md)
 
-Fatapi-mqtt wraps around [gmqtt](https://github.com/wialon/gmqtt) module. Gmqtt Python async client for MQTT client implementation.
+Fastapi-mqtt wraps around [gmqtt](https://github.com/wialon/gmqtt) module. Gmqtt Python async client for MQTT client implementation.
 Module has support of MQTT version 5.0 protocol
 
 [![MIT licensed](https://img.shields.io/github/license/sabuhish/fastapi-mqtt)](https://raw.githubusercontent.com/sabuhish/fastapi-mqtt/master/LICENSE)
