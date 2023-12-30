@@ -94,6 +94,9 @@ class FastMQTT:
         topic: topic name
         template: template topic name that contains wildcards
         """
+        if str(template).startswith("$share/"):
+            template=template.split("/", 2)[2]
+
         topic = topic.split("/")
         template = template.split("/")
 
