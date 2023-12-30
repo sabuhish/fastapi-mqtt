@@ -1,5 +1,6 @@
 import logging
 import os
+from collections import defaultdict
 from contextlib import asynccontextmanager
 
 import pytest
@@ -30,6 +31,8 @@ def test_app():
         password=TEST_BROKER_PWD,
     )
     fast_mqtt = FastMQTT(config=mqtt_config)
+    received_msgs = defaultdict(int)
+    processed_msgs = defaultdict(int)
 
     @asynccontextmanager
     async def _lifespan(application: FastAPI):
@@ -45,8 +48,10 @@ def test_app():
         fast_mqtt.client.subscribe("mqtt")  # subscribing mqtt topic
         logging.info("Connected: %s %s %s %s", client, flags, rc, properties)
 
-    @fast_mqtt.subscribe("mqtt/+/temperature", "mqtt/+/humidity")
+    @fast_mqtt.subscribe("$share/test/mqtt/+/temperature", "mqtt/+/humidity")
     async def _decorated_subscription(client, topic, payload, qos, properties):
+        """Subscription handler for temperature and humidity topics."""
+        processed_msgs[topic] += 1
         logging.info(
             "temperature/humidity: %s %s %s %s",
             topic,
@@ -56,8 +61,27 @@ def test_app():
         )
         return 0
 
+    @fast_mqtt.subscribe("mqtt/+/humidity", qos=2)
+    async def _second_subscription(client, topic, payload, qos, properties):
+        """
+        Second subscription handler for humidity topic.
+
+        Both handlers should be called when receiving mqtt/+/humidity messages.
+        """
+        processed_msgs[topic] += 1
+        logging.info(
+            "humidity: %s %s %s %s",
+            topic,
+            payload.decode(),
+            qos,
+            properties,
+        )
+        return 0
+
     @fast_mqtt.on_message()
     async def _process_message(client, topic, payload, qos, properties):
+        """Universal handler for all messages received."""
+        received_msgs[topic] += 1
         logging.info(
             "Received message: %s %s %s %s", topic, payload.decode(), qos, properties
         )
@@ -71,22 +95,32 @@ def test_app():
     def _subscribe(client, mid, qos, properties):
         logging.info("subscribed %s %s %s %s", client, mid, qos, properties)
 
+    @app.get("/test-status")
+    async def _get_status():
+        return {
+            "received_msgs": received_msgs,
+            "processed_msgs": processed_msgs,
+            "num_subscriptions": len(fast_mqtt.subscriptions),
+        }
+
     @app.post("/test-publish")
     async def _pub_msg():
         fast_mqtt.publish("mqtt", "Hello from Fastapi")
+        fast_mqtt.publish("mqtt/test/temperature", "27ºC")
         fast_mqtt.publish("mqtt/test/humidity", "0%")
         return {"result": True, "message": "Published"}
 
     @app.post("/test-unsubscribe")
     async def _unsub():
         fast_mqtt.unsubscribe("mqtt")
-        fast_mqtt.unsubscribe("mqtt/+/temperature")
+        fast_mqtt.unsubscribe("$share/test/mqtt/+/temperature")
         return {"result": True, "message": "Unsubscribed"}
 
     @app.post("/test-reset")
     async def _reset_msgs():
         fast_mqtt.publish("mqtt")
         fast_mqtt.publish("mqtt/test/humidity")
+        fast_mqtt.publish("mqtt/test/temperature")
         return {"result": True, "message": "Cleaned"}
 
     return app
