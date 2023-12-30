@@ -15,7 +15,7 @@ async def test_example_app(client: TestClient):
     response = await client.get("/test-status")
     assert response.status_code == 200
     assert response.json() == {
-        "received_msgs": {"mqtt": 1, "mqtt/test/humidity": 1, "mqtt/test/temperature": 1},
+        "received_msgs": {"fastapi-mqtt": 1, "mqtt/test/humidity": 1, "mqtt/test/temperature": 1},
         "processed_msgs": {"mqtt/test/temperature": 1, "mqtt/test/humidity": 2},
         "num_subscriptions": 2,
     }
@@ -35,7 +35,7 @@ async def test_example_app(client: TestClient):
     response = await client.get("/test-status")
     assert response.status_code == 200
     assert response.json() == {
-        "received_msgs": {"mqtt": 1, "mqtt/test/humidity": 2, "mqtt/test/temperature": 1},
+        "received_msgs": {"fastapi-mqtt": 1, "mqtt/test/humidity": 2, "mqtt/test/temperature": 1},
         "processed_msgs": {"mqtt/test/temperature": 1, "mqtt/test/humidity": 4},
         "num_subscriptions": 1,
     }
@@ -49,7 +49,7 @@ async def test_example_app(client: TestClient):
     response = await client.get("/test-status")
     assert response.status_code == 200
     assert response.json() == {
-        "received_msgs": {"mqtt": 1, "mqtt/test/humidity": 3, "mqtt/test/temperature": 1},
+        "received_msgs": {"fastapi-mqtt": 1, "mqtt/test/humidity": 3, "mqtt/test/temperature": 1},
         "processed_msgs": {"mqtt/test/temperature": 1, "mqtt/test/humidity": 6},
         "num_subscriptions": 1,
     }

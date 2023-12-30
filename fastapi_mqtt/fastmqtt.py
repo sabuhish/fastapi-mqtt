@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import uuid
 from itertools import zip_longest
 from typing import Any, Callable, Dict, List, Optional, Tuple
@@ -16,8 +17,6 @@ try:
 
     log_info = logger
 except ImportError:
-    import logging
-
     log_info = logging.getLogger()
 
 
@@ -39,6 +38,8 @@ class FastMQTT:
                             The client_id  identifies the session.
 
     optimistic_acknowledgement:  #TODO more info needed
+
+    mqtt_logger: Optional logging.Logger to use.
     """
 
     def __init__(
@@ -48,6 +49,7 @@ class FastMQTT:
         client_id: Optional[str] = None,
         clean_session: bool = True,
         optimistic_acknowledgement: bool = True,
+        mqtt_logger: logging.Logger | None = None,
         **kwargs: Any,
     ):
         if not client_id:
@@ -67,9 +69,9 @@ class FastMQTT:
         self.client._connect_properties = kwargs
         self.client.on_message = self.__on_message
         self.client.on_connect = self.__on_connect
-        self.subscriptions: Dict[str, Tuple[Subscription, List[Callable]]] = dict()
+        self.subscriptions: Dict[str, Tuple[Subscription, List[Callable]]] = {}
         self.mqtt_handlers = MQTTHandlers(self.client)
-        log_info = logger
+        self._logger = mqtt_logger or log_info
 
         if (
             self.config.will_message_topic
@@ -81,10 +83,13 @@ class FastMQTT:
                 self.config.will_message_payload,
                 will_delay_interval=self.config.will_delay_interval,
             )
-            log_info.debug(
-                f"topic -> {self.config.will_message_topic} \n payload -> {self.config.will_message_payload} \n will_delay_interval -> {self.config.will_delay_interval}"  # noqa E501
+            self._logger.debug(
+                "WILL MESSAGE INITIALIZED: "
+                "topic -> %s\n payload -> %s\n will_delay_interval -> %s",
+                self.config.will_message_topic,
+                self.config.will_message_payload,
+                self.config.will_delay_interval,
             )
-            log_info.debug("WILL MESSAGE INITIALIZED")
 
     @staticmethod
     def match(topic, template):
@@ -103,9 +108,9 @@ class FastMQTT:
         for topic_part, part in zip_longest(topic, template):
             if part == "#" and not str(topic_part).startswith("$"):
                 return True
-            elif topic_part is None or part not in {"+", topic_part}:
-                return False
-            elif part == "+" and topic_part.startswith("$"):
+            elif (topic_part is None or part not in {"+", topic_part}) or (
+                part == "+" and topic_part.startswith("$")
+            ):
                 return False
             continue
 
@@ -113,15 +118,13 @@ class FastMQTT:
 
     async def connection(self) -> None:
         if self.client._username:
-            self.client.set_auth_credentials(
-                self.client._username, self.client._password
-            )
-            log_info.debug("user is authenticated")
+            self.client.set_auth_credentials(self.client._username, self.client._password)
+            self._logger.debug("user is authenticated")
 
         await self.__set_connetion_config()
 
         version = self.config.version or MQTTv50
-        log_info.warning(f"Used broker version is {version}")
+        self._logger.info("Used broker version is %s", version)
 
         await self.client.connect(
             self.client._host,
@@ -130,7 +133,7 @@ class FastMQTT:
             self.client._keepalive,
             version,
         )
-        log_info.debug("connected to broker..")
+        self._logger.debug("Connected to broker")
 
     async def __set_connetion_config(self) -> None:
         """
@@ -139,7 +142,6 @@ class FastMQTT:
         For changing this behavior, set reconnect_retries and reconnect_delay with its values.
         For more info: https://github.com/wialon/gmqtt#reconnects
         """
-
         self.client.set_config(
             {
                 "reconnect_retries": self.config.reconnect_retries,
@@ -147,9 +149,7 @@ class FastMQTT:
             }
         )
 
-    def __on_connect(
-        self, client: MQTTClient, flags: int, rc: int, properties: Any
-    ) -> None:
+    def __on_connect(self, client: MQTTClient, flags: int, rc: int, properties: Any) -> None:
         """
         Generic on connecting handler, it would call user handler if defined.
         Will perform subscription for given topics.
@@ -159,7 +159,7 @@ class FastMQTT:
             self.mqtt_handlers.get_user_connect_handler(client, flags, rc, properties)
 
         for topic in self.subscriptions:
-            log_info.debug(f"Subscribing for {topic}")
+            self._logger.debug("Subscribing for %s", topic)
             self.client.subscribe(self.subscriptions[topic][0])
 
     async def __on_message(
@@ -171,16 +171,14 @@ class FastMQTT:
         """
         gather = []
         if self.mqtt_handlers.get_user_message_handler:
-            log_info.debug("Calling user_message_handler")
+            self._logger.debug("Calling user_message_handler")
             gather.append(
-                self.mqtt_handlers.get_user_message_handler(
-                    client, topic, payload, qos, properties
-                )
+                self.mqtt_handlers.get_user_message_handler(client, topic, payload, qos, properties)
             )
 
         for topic_template in self.subscriptions:
             if self.match(topic, topic_template):
-                log_info.debug(f"Calling specific handler for topic {topic}")
+                self._logger.debug("Calling specific handler for topic %s", topic)
                 for handler in self.subscriptions[topic_template][1]:
                     gather.append(handler(client, topic, payload, qos, properties))
 
@@ -215,7 +213,7 @@ class FastMQTT:
 
         topic: topic name
         """
-        log_info.debug("unsubscribe")
+        self._logger.debug("unsubscribe")
         if topic in self.subscriptions:
             del self.subscriptions[topic]
 
@@ -254,7 +252,7 @@ class FastMQTT:
         """
 
         def subscribe_handler(handler: Callable) -> Callable:
-            log_info.debug("Subscribe for topics: %s", topics)
+            self._logger.debug("Subscribe for topics: %s", topics)
             for topic in topics:
                 if topic not in self.subscriptions:
                     subscription = Subscription(
@@ -278,8 +276,7 @@ class FastMQTT:
                             retain_handling_options,
                             old_subscription.retain_handling_options,
                         ),
-                        old_subscription.subscription_identifier
-                        or subscription_identifier,
+                        old_subscription.subscription_identifier or subscription_identifier,
                     )
                     self.subscriptions[topic] = (
                         new_subscription,
@@ -296,7 +293,7 @@ class FastMQTT:
         """
 
         def connect_handler(handler: Callable) -> Callable:
-            log_info.debug("handler accepted")
+            self._logger.debug("handler accepted")
             return self.mqtt_handlers.on_connect(handler)
 
         return connect_handler
@@ -307,7 +304,7 @@ class FastMQTT:
         """
 
         def message_handler(handler: Callable) -> Callable:
-            log_info.debug("on_message handler accepted")
+            self._logger.debug("on_message handler accepted")
             return self.mqtt_handlers.on_message(handler)
 
         return message_handler
@@ -318,7 +315,7 @@ class FastMQTT:
         """
 
         def disconnect_handler(handler: Callable) -> Callable:
-            log_info.debug("on_disconnect handler accepted")
+            self._logger.debug("on_disconnect handler accepted")
             return self.mqtt_handlers.on_disconnect(handler)
 
         return disconnect_handler
@@ -329,7 +326,7 @@ class FastMQTT:
         """
 
         def subscribe_handler(handler: Callable):
-            log_info.debug("on_subscribe handler accepted")
+            self._logger.debug("on_subscribe handler accepted")
             return self.mqtt_handlers.on_subscribe(handler)
 
         return subscribe_handler

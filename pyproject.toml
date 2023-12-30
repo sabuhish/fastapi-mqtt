@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-mqtt"
-version = "2.0.0"
+version = "2.1.0"
 description = "fastapi-mqtt is extension for MQTT protocol"
 authors = ["sabuhish <sabuhi.shukurov@gmail.com>"]
 license = "MIT"
@@ -28,10 +28,7 @@ pydantic = ">=2.3.0"
 uvicorn = ">=0.19.0"
 
 [tool.poetry.dev-dependencies]
-black = "^23.3.0"
-isort = "^5.10.1"
-flake8 = "^4.0.1"
-mypy = ">=0.942"
+pre-commit = ">=2.9.2,<3"
 pytest = ">=7.0.0"
 pytest-cov = ">=3.0.0"
 pytest-asyncio = ">=0.16.0"
@@ -41,9 +38,15 @@ async-asgi-testclient = ">=1.4.11"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.isort]
-profile = "black"
-line_length = 100
+[tool.ruff]
+select = ["A", "ASYNC", "B", "BLE", "C", "C4", "E", "F", "FA", "I", "INT", "N", "PIE", "PTH", "RUF", "SIM", "TCH", "W", "YTT"]
+target-version = "py311"
+fix = true
+line-length = 100
+
+[tool.ruff.isort]
+known-first-party = ["fastapi_mqtt"]
+order-by-type = false
 
 [tool.pytest.ini_options]
 minversion = 7.0

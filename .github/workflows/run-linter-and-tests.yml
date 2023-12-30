@@ -1,4 +1,4 @@
-name: Run pytest on FastApi-MQTT Package
+name: Run CI linter and pytest on FastApi-MQTT Package
 
 on: [push, pull_request]
 
@@ -9,9 +9,9 @@ jobs:
       - name: Start Mosquitto MQTT broker
         uses: namoshek/mosquitto-github-action@v1
         with:
-          version: '1.6.15'
-          ports: '1883:1883 9001:9001'
-          container-name: 'mqtt'
+          version: "1.6.15"
+          ports: "1883:1883 9001:9001"
+          container-name: "mqtt"
 
       - name: Check out repository
         uses: actions/checkout@v3
@@ -24,10 +24,13 @@ jobs:
       - name: Run Poetry image
         uses: abatilo/actions-poetry@v2.0.0
         with:
-          poetry-version: 1.5.1
+          poetry-version: 1.6.1
 
       - name: Install library
         run: poetry install --no-interaction
+
+      - name: Run linter
+        run: poetry run pre-commit run --all-files
 
       - name: Run tests
         run: TEST_BROKER_HOST=localhost poetry run pytest

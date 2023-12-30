@@ -67,11 +67,11 @@ client has the following parameters. The class object holds session information 
 - client_id: Should be a unique identifier for connection to the MQTT broker.
 
 - clean_session: Enables broker to establish a persistent session.
-                        In a persistent session clean_session = False.
-                        The broker stores all subscriptions for the client.
-                        If the session is not persistent (clean_session = True).
-                        The broker does not store anything for the client and \
-                        purges all information from any previous persistent session.
-                        The client_id  identifies the session.
+  In a persistent session clean_session = False.
+  The broker stores all subscriptions for the client.
+  If the session is not persistent (clean_session = True).
+  The broker does not store anything for the client and \
+   purges all information from any previous persistent session.
+  The client_id identifies the session.
 
 - optimistic_acknowledgement
