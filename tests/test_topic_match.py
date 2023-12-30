@@ -38,7 +38,6 @@ class TestTopicMatching:
         ("+/tennis", "anything/golf", False),
         ("#", "$SYS/anything", False),
         ("+/monitor/Clients", "$SYS/monitor/Clients", False),
-
         # According to MQTT5.0 item 4.8.2
         ("$share/myshare/Clients/anything", "Clients/anything", True),
         ("$share/myshare/Clients/+", "Clients/anything", True),
