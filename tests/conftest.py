@@ -45,7 +45,7 @@ def test_app():  # noqa: C901
 
     @fast_mqtt.on_connect()
     def _connect(client, flags, rc, properties):
-        fast_mqtt.client.subscribe("mqtt")  # subscribing mqtt topic
+        fast_mqtt.client.subscribe("fastapi-mqtt")  # subscribing mqtt topic
         logging.info("Connected: %s %s %s %s", client, flags, rc, properties)
 
     @fast_mqtt.subscribe("$share/test/mqtt/+/temperature", "mqtt/+/humidity")
@@ -109,20 +109,20 @@ def test_app():  # noqa: C901
 
     @app.post("/test-publish")
     async def _pub_msg():
-        fast_mqtt.publish("mqtt", "Hello from Fastapi")
+        fast_mqtt.publish("fastapi-mqtt", "Hello from Fastapi")
         fast_mqtt.publish("mqtt/test/temperature", "27ºC")
         fast_mqtt.publish("mqtt/test/humidity", "0%")
         return {"result": True, "message": "Published"}
 
     @app.post("/test-unsubscribe")
     async def _unsub():
-        fast_mqtt.unsubscribe("mqtt")
+        fast_mqtt.unsubscribe("fastapi-mqtt")
         fast_mqtt.unsubscribe("$share/test/mqtt/+/temperature")
         return {"result": True, "message": "Unsubscribed"}
 
     @app.post("/test-reset")
     async def _reset_msgs():
-        fast_mqtt.publish("mqtt")
+        fast_mqtt.publish("fastapi-mqtt")
         fast_mqtt.publish("mqtt/test/humidity")
         fast_mqtt.publish("mqtt/test/temperature")
         return {"result": True, "message": "Cleaned"}
