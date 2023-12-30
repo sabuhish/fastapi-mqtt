@@ -123,8 +123,9 @@ mqtt = FastMQTT(config=mqtt_config)
 docker run -d --name mosquitto -p 9001:9001 -p 1883:1883 eclipse-mosquitto:1.6.15
 # Set host for test broker when running pytest
 TEST_BROKER_HOST=localhost pytest
-# Run example app against local broker
+# Run the example apps against local broker, with uvicorn
 TEST_BROKER_HOST=localhost uvicorn examples.app:app --port 8000 --reload
+TEST_BROKER_HOST=localhost uvicorn examples.ws_app.app:application --port 8000 --reload
 ```
 
 # Contributing
