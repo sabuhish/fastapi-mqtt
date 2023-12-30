@@ -3,8 +3,9 @@ import pytest
 from fastapi_mqtt.fastmqtt import FastMQTT
 
 
-class TestTopicMatching:
-    matching = [
+@pytest.mark.parametrize(
+    argnames=["pattern", "topic", "match"],
+    argvalues=[
         # pattern, topic, match
         ("sport/tennis/player1", "sport/tennis/player1", True),
         # wildcard "#"
@@ -43,8 +44,7 @@ class TestTopicMatching:
         ("$share/myshare/Clients/+", "Clients/anything", True),
         ("$share/myshare//finance", "/finance", True),
         ("$share/myshare//finance", "finance", False),
-    ]
-
-    @pytest.mark.parametrize(argnames=["pattern", "topic", "match"], argvalues=matching)
-    def test_matching(self, topic: str, pattern: str, match: bool) -> None:
-        assert match == FastMQTT.match(topic=topic, template=pattern)
+    ],
+)
+def test_matching(topic: str, pattern: str, match: bool) -> None:
+    assert match == FastMQTT.match(topic=topic, template=pattern)

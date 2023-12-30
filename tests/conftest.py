@@ -20,7 +20,7 @@ TEST_BROKER_PWD = "secret" if TEST_BROKER_HOST != "test.mosquitto.org" else None
 
 
 @pytest.fixture
-def test_app():
+def test_app():  # noqa: C901
     """Fixture with example fastAPI app for tests."""
     mqtt_config = MQTTConfig(
         host=TEST_BROKER_HOST,

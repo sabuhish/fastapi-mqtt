@@ -39,7 +39,7 @@ class FastMQTT:
                             The client_id  identifies the session.
 
     optimistic_acknowledgement:  #TODO more info needed
-    """  # noqa E501
+    """
 
     def __init__(
         self,
@@ -67,7 +67,7 @@ class FastMQTT:
         self.client._connect_properties = kwargs
         self.client.on_message = self.__on_message
         self.client.on_connect = self.__on_connect
-        self.subscriptions: Dict[str, Tuple[Subscription, List[Callable]]] = dict()
+        self.subscriptions: Dict[str, Tuple[Subscription, List[Callable]]] = {}
         self.mqtt_handlers = MQTTHandlers(self.client)
         log_info = logger
 
@@ -103,9 +103,9 @@ class FastMQTT:
         for topic_part, part in zip_longest(topic, template):
             if part == "#" and not str(topic_part).startswith("$"):
                 return True
-            elif topic_part is None or part not in {"+", topic_part}:
-                return False
-            elif part == "+" and topic_part.startswith("$"):
+            elif (topic_part is None or part not in {"+", topic_part}) or (
+                part == "+" and topic_part.startswith("$")
+            ):
                 return False
             continue
 
@@ -136,7 +136,7 @@ class FastMQTT:
         The number of reconnect attempts is unlimited.
         For changing this behavior, set reconnect_retries and reconnect_delay with its values.
         For more info: https://github.com/wialon/gmqtt#reconnects
-        """  # noqa E501
+        """
         self.client.set_config(
             {
                 "reconnect_retries": self.config.reconnect_retries,
