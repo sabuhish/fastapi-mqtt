@@ -43,3 +43,8 @@ async def func():
 
     return {"result": True,"message":"Published" }
 ```
+
+### More complex examples
+
+Visit the [examples](https://github.com/sabuhish/fastapi-mqtt/tree/master/examples) folder for more code examples,
+including a full fastAPI app organized in multiple files (splitting dependencies, routes, app creation) implementing a **dynamic MQTT client** through a WebSocket connection.
