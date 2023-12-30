@@ -95,7 +95,7 @@ class FastMQTT:
         template: template topic name that contains wildcards
         """
         if str(template).startswith("$share/"):
-            template=template.split("/", 2)[2]
+            template = template.split("/", 2)[2]
 
         topic = topic.split("/")
         template = template.split("/")
@@ -254,7 +254,7 @@ class FastMQTT:
         """
 
         def subscribe_handler(handler: Callable) -> Callable:
-            log_info.debug(f"Subscribe for a topics: {topics}")
+            log_info.debug("Subscribe for topics: %s", topics)
             for topic in topics:
                 if topic not in self.subscriptions:
                     subscription = Subscription(
