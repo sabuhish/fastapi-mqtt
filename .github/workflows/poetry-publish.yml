@@ -2,17 +2,17 @@ name: Upload FastApi-MQTT Package
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   release:
     if: github.repository == 'sabuhish/fastapi-mqtt'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
-          python-version: "3.8"
+          python-version: 3.11
           architecture: x64
       - name: Install dependencies
         run: |
