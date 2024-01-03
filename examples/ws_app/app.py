@@ -25,9 +25,9 @@ def create_app():
     ws_subscribers = DynamicMQTTClient(fast_mqtt)
 
     @asynccontextmanager
-    async def _lifespan(application: FastAPI):
+    async def _lifespan(fastapi_app: FastAPI):
         await fast_mqtt.mqtt_startup()
-        application.state.ws_subscribers = ws_subscribers
+        fastapi_app.state.ws_subscribers = ws_subscribers
         yield
         await ws_subscribers.close()
         await fast_mqtt.mqtt_shutdown()
