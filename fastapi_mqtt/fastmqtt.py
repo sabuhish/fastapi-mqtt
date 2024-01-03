@@ -49,9 +49,9 @@ class FastMQTT:
         client_id: Optional[str] = None,
         clean_session: bool = True,
         optimistic_acknowledgement: bool = True,
-        mqtt_logger: logging.Logger | None = None,
+        mqtt_logger: Optional[logging.Logger] = None,
         **kwargs: Any,
-    ):
+    ) -> None:
         if not client_id:
             client_id = uuid.uuid4().hex
 
