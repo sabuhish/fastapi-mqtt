@@ -1,25 +1,23 @@
-from typing import Any, Callable, Optional
+from logging import Logger
+from typing import Any, Awaitable, Callable, Optional
 
 from gmqtt import Client as MQTTClient
 
-try:
-    from uvicorn.config import logger
-
-    log_info = logger
-except ImportError:
-    import logging
-
-    log_info = logging.getLogger()
+# client: MQTTClient, topic: str, payload: bytes, qos: int, properties: Any
+MQTTMessageHandler = Callable[[MQTTClient, str, bytes, int, Any], Awaitable[Any]]
+# client: MQTTClient, flags: int, rc: int, properties: Any
+MQTTConnectionHandler = Callable[[MQTTClient, int, int, Any], Any]
 
 
 class MQTTHandlers:
-    def __init__(self, client: MQTTClient):
+    def __init__(self, client: MQTTClient, logger: Logger):
+        self._logger = logger
         self.client = client
-        self.user_message_handler: Optional[Callable[..., Any]] = None
-        self.user_connect_handler: Optional[Callable[..., Any]] = None
+        self.user_message_handler: Optional[MQTTMessageHandler] = None
+        self.user_connect_handler: Optional[MQTTConnectionHandler] = None
 
-    def on_message(self, handler: Callable) -> Callable[..., Any]:
-        log_info.info("on_message handler accepted")
+    def on_message(self, handler: MQTTMessageHandler) -> MQTTMessageHandler:
+        self._logger.info("on_message handler accepted")
         self.user_message_handler = handler
         return handler
 
@@ -27,7 +25,7 @@ class MQTTHandlers:
         """
         Decorator method is used to obtain subscribed topics and properties.
         """
-        log_info.info("on_subscribe handler accepted")
+        self._logger.info("on_subscribe handler accepted")
         self.client.on_subscribe = handler
         return handler
 
@@ -35,8 +33,8 @@ class MQTTHandlers:
         self.client.on_disconnect = handler
         return handler
 
-    def on_connect(self, handler: Callable) -> Callable[..., Any]:
-        log_info.info("on_connect handler accepted")
+    def on_connect(self, handler: MQTTConnectionHandler) -> MQTTConnectionHandler:
+        self._logger.info("on_connect handler accepted")
         self.user_connect_handler = handler
         return handler
 

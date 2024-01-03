@@ -13,9 +13,7 @@ from .config import MQTTConfig
 from .handlers import MQTTHandlers
 
 try:
-    from uvicorn.config import logger
-
-    log_info = logger
+    from uvicorn.config import logger as log_info
 except ImportError:
     log_info = logging.getLogger()
 
@@ -70,8 +68,8 @@ class FastMQTT:
         self.client.on_message = self.__on_message
         self.client.on_connect = self.__on_connect
         self.subscriptions: Dict[str, Tuple[Subscription, List[Callable]]] = {}
-        self.mqtt_handlers = MQTTHandlers(self.client)
         self._logger = mqtt_logger or log_info
+        self.mqtt_handlers = MQTTHandlers(self.client, self._logger)
 
         if (
             self.config.will_message_topic
