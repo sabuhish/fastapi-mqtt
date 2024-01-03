@@ -2,11 +2,13 @@ import logging
 import os
 from collections import defaultdict
 from contextlib import asynccontextmanager
+from typing import Any
 
 import pytest
 import pytest_asyncio
 from async_asgi_testclient import TestClient
 from fastapi import FastAPI
+from gmqtt import Client as MQTTClient
 
 from fastapi_mqtt.config import MQTTConfig
 from fastapi_mqtt.fastmqtt import FastMQTT
@@ -35,7 +37,7 @@ def test_app():  # noqa: C901
     processed_msgs = defaultdict(int)
 
     @asynccontextmanager
-    async def _lifespan(application: FastAPI):
+    async def _lifespan(_application: FastAPI):
         await fast_mqtt.mqtt_startup()
         logging.info("connection done, starting fastapi app now")
         yield
@@ -44,12 +46,14 @@ def test_app():  # noqa: C901
     app = FastAPI(lifespan=_lifespan)
 
     @fast_mqtt.on_connect()
-    def _connect(client, flags, rc, properties):
-        fast_mqtt.client.subscribe("fastapi-mqtt")  # subscribing mqtt topic
+    def _connect(client: MQTTClient, flags: int, rc: int, properties: Any):
+        client.subscribe("fastapi-mqtt")  # subscribing mqtt topic
         logging.info("Connected: %s %s %s %s", client, flags, rc, properties)
 
     @fast_mqtt.subscribe("$share/test/mqtt/+/temperature", "mqtt/+/humidity")
-    async def _decorated_subscription(client, topic, payload, qos, properties):
+    async def _decorated_subscription(
+        client: MQTTClient, topic: str, payload: bytes, qos: int, properties: Any
+    ):
         """Subscription handler for temperature and humidity topics."""
         processed_msgs[topic] += 1
         logging.info(
@@ -62,7 +66,9 @@ def test_app():  # noqa: C901
         return 0
 
     @fast_mqtt.subscribe("mqtt/+/humidity", qos=2)
-    async def _second_subscription(client, topic, payload, qos, properties):
+    async def _second_subscription(
+        client: MQTTClient, topic: str, payload: bytes, qos: int, properties: Any
+    ):
         """
         Second subscription handler for humidity topic.
 
@@ -79,7 +85,9 @@ def test_app():  # noqa: C901
         return 0
 
     @fast_mqtt.on_message()
-    async def _process_message(client, topic, payload, qos, properties):
+    async def _process_message(
+        client: MQTTClient, topic: str, payload: bytes, qos: int, properties: Any
+    ):
         """Universal handler for all messages received."""
         received_msgs[topic] += 1
         logging.info(
@@ -92,11 +100,11 @@ def test_app():  # noqa: C901
         return 0
 
     @fast_mqtt.on_disconnect()
-    def _disconnect(client, packet, exc=None):
+    def _disconnect(client: MQTTClient, packet, exc=None):
         logging.info("Disconnected")
 
     @fast_mqtt.on_subscribe()
-    def _subscribe(client, mid, qos, properties):
+    def _subscribe(client: MQTTClient, mid: int, qos: int, properties: Any):
         logging.info("subscribed %s %s %s %s", client, mid, qos, properties)
 
     @app.get("/test-status")
@@ -131,7 +139,7 @@ def test_app():  # noqa: C901
 
 
 @pytest_asyncio.fixture
-async def client(test_app):
+async def app_client(test_app):
     """FastApi TestClient with example app."""
     async with TestClient(test_app) as tc:
         yield tc

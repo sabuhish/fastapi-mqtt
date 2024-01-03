@@ -13,9 +13,7 @@ from .config import MQTTConfig
 from .handlers import MQTTHandlers
 
 try:
-    from uvicorn.config import logger
-
-    log_info = logger
+    from uvicorn.config import logger as log_info
 except ImportError:
     log_info = logging.getLogger()
 
@@ -49,9 +47,9 @@ class FastMQTT:
         client_id: Optional[str] = None,
         clean_session: bool = True,
         optimistic_acknowledgement: bool = True,
-        mqtt_logger: logging.Logger | None = None,
+        mqtt_logger: Optional[logging.Logger] = None,
         **kwargs: Any,
-    ):
+    ) -> None:
         if not client_id:
             client_id = uuid.uuid4().hex
 
@@ -70,8 +68,8 @@ class FastMQTT:
         self.client.on_message = self.__on_message
         self.client.on_connect = self.__on_connect
         self.subscriptions: Dict[str, Tuple[Subscription, List[Callable]]] = {}
-        self.mqtt_handlers = MQTTHandlers(self.client)
         self._logger = mqtt_logger or log_info
+        self.mqtt_handlers = MQTTHandlers(self.client, self._logger)
 
         if (
             self.config.will_message_topic
@@ -92,7 +90,7 @@ class FastMQTT:
             )
 
     @staticmethod
-    def match(topic, template):
+    def match(topic: str, template: str) -> bool:
         """
         Defined match topics
 
@@ -102,10 +100,10 @@ class FastMQTT:
         if str(template).startswith("$share/"):
             template = template.split("/", 2)[2]
 
-        topic = topic.split("/")
-        template = template.split("/")
+        topic_parts = topic.split("/")
+        template_parts = template.split("/")
 
-        for topic_part, part in zip_longest(topic, template):
+        for topic_part, part in zip_longest(topic_parts, template_parts):
             if part == "#" and not str(topic_part).startswith("$"):
                 return True
             elif (topic_part is None or part not in {"+", topic_part}) or (
@@ -114,7 +112,7 @@ class FastMQTT:
                 return False
             continue
 
-        return len(template) == len(topic)
+        return len(template_parts) == len(topic_parts)
 
     async def connection(self) -> None:
         if self.client._username:
@@ -155,8 +153,8 @@ class FastMQTT:
         Will perform subscription for given topics.
         It cannot be done earlier, since subscription relies on connection.
         """
-        if self.mqtt_handlers.get_user_connect_handler:
-            self.mqtt_handlers.get_user_connect_handler(client, flags, rc, properties)
+        if self.mqtt_handlers.user_connect_handler is not None:
+            self.mqtt_handlers.user_connect_handler(client, flags, rc, properties)
 
         for topic in self.subscriptions:
             self._logger.debug("Subscribing for %s", topic)
@@ -170,10 +168,10 @@ class FastMQTT:
         This will invoke per topic handlers that are subscribed for
         """
         gather = []
-        if self.mqtt_handlers.get_user_message_handler:
+        if self.mqtt_handlers.user_message_handler is not None:
             self._logger.debug("Calling user_message_handler")
             gather.append(
-                self.mqtt_handlers.get_user_message_handler(client, topic, payload, qos, properties)
+                self.mqtt_handlers.user_message_handler(client, topic, payload, qos, properties)
             )
 
         for topic_template in self.subscriptions:
@@ -191,7 +189,7 @@ class FastMQTT:
         qos: int = 0,
         retain: bool = False,
         **kwargs,
-    ):
+    ) -> None:
         """
         Defined to publish payload MQTT server
 
@@ -219,11 +217,11 @@ class FastMQTT:
 
         return self.client.unsubscribe(topic, **kwargs)
 
-    async def mqtt_startup(self):
+    async def mqtt_startup(self) -> None:
         """Initial connection for MQTT client, for lifespan startup."""
         await self.connection()
 
-    async def mqtt_shutdown(self):
+    async def mqtt_shutdown(self) -> None:
         """Final disconnection for MQTT client, for lifespan shutdown."""
         await self.client.disconnect()
 
@@ -231,11 +229,11 @@ class FastMQTT:
         """Add startup and shutdown event handlers for app without lifespan."""
 
         @app.on_event("startup")
-        async def startup():
+        async def startup() -> None:
             await self.mqtt_startup()
 
         @app.on_event("shutdown")
-        async def shutdown():
+        async def shutdown() -> None:
             await self.mqtt_shutdown()
 
     def subscribe(
