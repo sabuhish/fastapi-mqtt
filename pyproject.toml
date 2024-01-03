@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-mqtt"
-version = "2.1.0"
+version = "2.1.1"
 description = "fastapi-mqtt is extension for MQTT protocol"
 authors = ["sabuhish <sabuhi.shukurov@gmail.com>"]
 license = "MIT"
