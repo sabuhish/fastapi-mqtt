@@ -1,3 +1,4 @@
+import warnings
 from logging import Logger
 from typing import Any, Awaitable, Callable, Optional
 
@@ -38,10 +39,17 @@ class MQTTHandlers:
         self.user_connect_handler = handler
         return handler
 
+    # TODO: Remove these unused properties on v3.0
     @property
-    def get_user_message_handler(self) -> Optional[Callable[..., Any]]:
+    def get_user_message_handler(self) -> Optional[MQTTMessageHandler]:  # pragma: no cover
+        warnings.warn(
+            "Deprecated property. Access to .user_message_handler", DeprecationWarning, stacklevel=1
+        )
         return self.user_message_handler
 
     @property
-    def get_user_connect_handler(self) -> Optional[Callable[..., Any]]:
+    def get_user_connect_handler(self) -> Optional[MQTTConnectionHandler]:  # pragma: no cover
+        warnings.warn(
+            "Deprecated property. Access to .user_connect_handler", DeprecationWarning, stacklevel=1
+        )
         return self.user_connect_handler
