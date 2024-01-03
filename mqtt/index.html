@@ -1,0 +1,860 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="fastapi-mqtt is client for MQTT protocol">
+      
+      
+      
+      
+        <link rel="prev" href="../example/">
+      
+      
+        <link rel="next" href="../contribute/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>MQTT - FastApi-MQTT</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#short-information" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="FastApi-MQTT" class="md-header__button md-logo" aria-label="FastApi-MQTT" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FastApi-MQTT
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MQTT
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sabuhish/fastapi-mqtt" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fastapi-mqtt
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="FastApi-MQTT" class="md-nav__button md-logo" aria-label="FastApi-MQTT" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    FastApi-MQTT
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sabuhish/fastapi-mqtt" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fastapi-mqtt
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FastApi MQTT
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    🔨 Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    🕹 Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../example/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Example
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    MQTT
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    MQTT
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#short-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      Short Information
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Short Information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mqtt-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      MQTT Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MQTT Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      For instance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#important-points-to-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important Points to note
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqtt-topic" class="md-nav__link">
+    <span class="md-ellipsis">
+      MQTT Topic
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MQTT Topic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important Notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subscribing-to-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subscribing to Topics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Subscribing to Topics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wildcards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wildcards
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#publishing-to-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Publishing to Topics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqtt-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      MQTT Protocol
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqtt-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      MQTT specification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contribute/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#short-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      Short Information
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Short Information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mqtt-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      MQTT Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MQTT Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      For instance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#important-points-to-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important Points to note
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqtt-topic" class="md-nav__link">
+    <span class="md-ellipsis">
+      MQTT Topic
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MQTT Topic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important Notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subscribing-to-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subscribing to Topics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Subscribing to Topics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wildcards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wildcards
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#publishing-to-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Publishing to Topics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqtt-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      MQTT Protocol
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqtt-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      MQTT specification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>MQTT</h1>
+
+<h2 id="short-information">Short Information<a class="headerlink" href="#short-information" title="Permanent link">&para;</a></h2>
+<p>Short information about Message Queuing Telemetry Transport</p>
+<p>We will cover some basics and later on will dive in advance.
+This information is for beginners and for those who want to gain more knowledge.
+If you don't have any knowledge of what MQTT does, go ahead you will get much more.</p>
+<p><code>MQTT</code> stands for Message Queuing Telemetry Transport. The protocol was invented by IBM to facilitate machine-to-machine communication. It works on the publish and subscribe model to ensure efficient communication across platforms, and also has a level system for message priority. Currently, this protocol is widely used for IoT and large-scale communication because of its small footprint and minimal bandwidth consumption.</p>
+<p>In addition, it is designed as a lightweight messaging protocol that uses publish/subscribe operations to exchange data between clients and the server. Furthermore, its small size, low power usage, minimized data packets, and ease of implementation make the protocol ideal for the machine-to-machine or Internet of Things world.</p>
+<p>The compact header size of MQTT and its QoS (Quality of Service) are geared toward reliable M2M communication at a fundamental level, requiring few workarounds to operate smoothly. QoS in MQTT means that each message has three levels of a check for guaranteed message delivery. The levels increase bandwidth usage as they progress, but higher QoS carries with it assurances at the highest level for critical transmissions.</p>
+<p>So to sum up above:</p>
+<ul>
+<li>It's a lightweight protocol. So, it's easy to implement in software and fast in data transmission.</li>
+<li>It's based on a messaging technique.</li>
+<li>Minimized data packets. Hence, low network usage.</li>
+<li>Low power usage. As a result, it saves the connected device's battery.</li>
+<li>It's real-time! That is specifically what makes it perfect for IoT applications.</li>
+</ul>
+<h4 id="mqtt-components">MQTT Components<a class="headerlink" href="#mqtt-components" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>Broker</code>, which is the server that handles the data transmission between the clients.</li>
+<li>A <code>topic</code>, is the place a device wants to put or retrieve a message to/from.</li>
+<li>The message (<code>payload</code>), is the data that a device receives when subscribing to a topic or sends when publishing to a topic.</li>
+<li><code>Publish</code>, is the process a device does to send its message to the broker.</li>
+<li><code>Subscribe</code>, where a device does to retrieve a message from the broker.</li>
+</ul>
+<p>In MQTT a publisher publishes messages on a topic and a subscriber must subscribe to that topic to view the message. MQTT is based on clients and a server. Likewise, the server is the guy who is responsible for handling the client's requests for receiving or sending data between each other. MQTT <code>server</code> is called a <code>broker</code> and the <code>clients</code> are simply the <code>connected devices</code>. When a <code>device (a client)</code> wants to send data to the <code>broker</code>, we call this operation a <code>publish</code>. When a device (a <code>client</code>) wants to receive data from the broker, we call this operation a <code>subscribe</code>. These clients are publishing and subscribing to topics. So, the broker here is the one that handles the publishing/subscribing actions to the target topics.</p>
+<h5 id="for-instance">For instance<a class="headerlink" href="#for-instance" title="Permanent link">&para;</a></h5>
+<p>The device has a temperature sensor. Certainly, it wants to send his readings to the broker. On the other side, a phone/desktop application wants to receive this temperature value. Therefore, 2 things will happen:
+The device defines the topic it wants to publish on, ex: 'temp', then, it publishes the message 'temperature value'. The phone/desktop application subscribes to the topic 'temp', it receives the message that the device has published, which is the temperature value. Again, the broker's role here is to take the message 'temperature value' and deliver it to the phone/desktop application.</p>
+<h5 id="important-points-to-note">Important Points to note<a class="headerlink" href="#important-points-to-note" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Clients do not have addresses like in email systems, and messages are not sent to clients.</li>
+<li>Messages are published to a broker on a topic.</li>
+<li>The job of an MQTT broker is to filter messages based on topic and then distribute them to subscribers.</li>
+<li>A client can receive these messages by subscribing to that topic on the same broker.</li>
+<li>There is no direct connection between a publisher and a subscriber.</li>
+<li>All clients can publish (broadcast) and subscribe (receive).</li>
+<li>MQTT brokers do not normally store messages.</li>
+</ul>
+<h4 id="mqtt-topic">MQTT Topic<a class="headerlink" href="#mqtt-topic" title="Permanent link">&para;</a></h4>
+<p>Publishers publish to a broker, and the subscribers subscribe to that same broker and they subscribe to the same topic.
+They will receive all messages sent by that publisher. Publisher publishes throughout the topic and subscribers listen to the same topic to retrieve it. Topics are created dynamically when someone subscribes to a topic someone publishes a message to a topic with the retained message set to True.</p>
+<h5 id="important-notes">Important Notes<a class="headerlink" href="#important-notes" title="Permanent link">&para;</a></h5>
+<ul>
+<li>`Topic names are case sensitive.</li>
+<li><code>Use utf8</code>.</li>
+<li><code>Must consist at least one character to be valid</code>.</li>
+<li>Topics do not need to begin with a <code>/</code> and in fact, stating your topic structure with a <code>/</code> is considered bad practice.</li>
+</ul>
+<h4 id="subscribing-to-topics">Subscribing to Topics<a class="headerlink" href="#subscribing-to-topics" title="Permanent link">&para;</a></h4>
+<p>The following are all valid topic structures for houses with sensors in several rooms. It is a design choice.</p>
+<pre><code>house/room1/senson1
+house/room2/sensor1
+house/room2/sensor1
+house-room1-sensonr1
+house-room2-sensor1
+house/room1-sensor1
+house/room2-sensor1
+</code></pre>
+<p>When subscribing to multiple topics two wildcard characters can be used. Wildcards can only be used to denote a level or multi-levels i.e: <code>/house/#</code></p>
+<pre><code># (hash character) - multi-level wildcard
++ (plus character) - single-level wildcard
+</code></pre>
+<h5 id="wildcards">Wildcards<a class="headerlink" href="#wildcards" title="Permanent link">&para;</a></h5>
+<p>The client can subscribe to an individual or multiple topics. For multiple, you can use wild characters - <code>#</code> multi-level wildcard. For single-level - <code>+</code> single-level charter. Wildcards can only be used to denote level or multi-levels: i.e: <code>/house/#</code> and it will basically subscribe you all topics under that level slash house forward</p>
+<p>Invalid Topic Subscriptions:</p>
+<pre><code>house+ - Reason no topic level
+house# - Reason no topic level
+</code></pre>
+<p>Using wildcards:
+Subscribing to topic <code>house/+/main-light</code> which subscribes to any of these topics and this time ones below room1, room2 garage covered by <code>+</code> single. You will notice they all end with main-light.</p>
+<h5 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h5>
+<pre><code>house/room1/main-light
+house/room2/main-light
+house/garage/main-light
+</code></pre>
+<p>But it does not cover:</p>
+<pre><code>house/room1/side-light
+house/room2/side-light
+</code></pre>
+<p>Because it has a side-light, it is not main-light.</p>
+<h4 id="publishing-to-topics">Publishing to Topics<a class="headerlink" href="#publishing-to-topics" title="Permanent link">&para;</a></h4>
+<p>A client can only publish an individual topic. That is, using wildcards when publishing is not allowed. To publish a message on two topics you need to publish the message twice.</p>
+<h4 id="mqtt-protocol">MQTT Protocol<a class="headerlink" href="#mqtt-protocol" title="Permanent link">&para;</a></h4>
+<p>In comparison to HTTP, MQTT Protocol ensures high delivery guarantees. According to measurements in 3G networks, the throughout of MQTT is 93 times faster than HTTP.</p>
+<p>There are 3 levels of Quality of Services:</p>
+<ul>
+<li>At most once: guarantees a best-effort delivery.</li>
+<li>At least once: guaranteed that a message will be delivered at least once. But the message can also be delivered more than once.</li>
+<li>Exactly once: guarantees that each message is received only once by the counterpart</li>
+</ul>
+<p>HTTP is a request-response protocol for client-server computing and is not always optimized for mobile devices. The main solid benefits of MQTT in these terms are light weightiness (MQTT transfers data as a byte array) and publish/subscribe model, which makes it perfect for resource-constrained devices and helps to save battery. MQTT is a binary-based protocol where the control elements are binary bytes and not text strings. MQTT has a very short message header and the smallest packet message size of 2 bytes.</p>
+<h4 id="mqtt-specification">MQTT specification<a class="headerlink" href="#mqtt-specification" title="Permanent link">&para;</a></h4>
+<ul>
+<li>CONNECT</li>
+<li>PUBLISH</li>
+<li>SUBSCRIBE</li>
+<li>UNSUBSCRIBE</li>
+<li>DISCONNECT</li>
+</ul>
+<p>Whereas HTTP specifications are much longer.HTTP is worthy and extendable. But MQTT is more suitable when it is referred to as IoT development.</p>
+<p>MQTT uses a command and command acknowledgment format. That means each command has an associated acknowledgment. Topic names, Client ID, username, and passwords are encoded as UTF-8 strings. The Payload excluding MQTT protocol information like Client ID etc. is binary data and the content and format are application-specific. The fixed header field consists of the control field and the variable-length packet length field.</p>
+<p>The MQTT packet or message format consists of a 2-byte fixed header (always present) + Variable-header (not always present)+ payload (not always present).
+It is interesting that the client ID field is sent as the first part of the payload, and not as part of the header. MQTT uses TCP/IP to connect to the broker. TCP is a connection-orientated protocol with error correction and guarantees that packets are received in order.</p>
+<h4 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h4>
+<p><code>https://github.com/mqtt/mqtt.github.io/wikis</code></p>
+<p><code>https://blogs.windows.com/buildingapps/2016/03/14/when-to-use-a-http-call-instead-of-a-websocket-or-http-2-0/#ojUEP8d4hQBbeDVO.97</code></p>
+<p><code>http://www.steves-internet-guide.com/mqtt/</code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
