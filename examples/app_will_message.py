@@ -44,6 +44,5 @@ def subscribe(client, mid, qos, properties):
 @app.get("/")
 async def func():
     # publishing mqtt topic
-    await fast_mqtt.publish("/mqtt", "Hello from Fastapi")
-
+    fast_mqtt.publish("/mqtt", "Hello from Fastapi")
     return {"result": True, "message": "Published"}
