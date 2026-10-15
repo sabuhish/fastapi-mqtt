@@ -75,6 +75,7 @@ class FastMQTT:
         self.subscriptions: Dict[str, Tuple[Subscription, List[MQTTMessageHandler]]] = {}
         self._logger = mqtt_logger or log_info
         self.mqtt_handlers = MQTTHandlers(self.client, self._logger)
+        self._last_connect: Optional[Tuple[MQTTClient, int, int, Any]] = None
 
         if (
             self.config.will_message_topic
@@ -158,6 +159,7 @@ class FastMQTT:
         Will perform subscription for given topics.
         It cannot be done earlier, since subscription relies on connection.
         """
+        self._last_connect = (client, flags, rc, properties)
         if self.mqtt_handlers.user_connect_handler is not None:
             self.mqtt_handlers.user_connect_handler(client, flags, rc, properties)
 
@@ -297,7 +299,11 @@ class FastMQTT:
 
         def connect_handler(handler: MQTTConnectionHandler) -> MQTTConnectionHandler:
             self._logger.debug("handler accepted")
-            return self.mqtt_handlers.on_connect(handler)
+            self.mqtt_handlers.on_connect(handler)
+            # Replay the last CONNACK if the decorator ran after connect.
+            if self._last_connect is not None:
+                handler(*self._last_connect)
+            return handler
 
         return connect_handler
 
