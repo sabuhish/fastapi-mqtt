@@ -1,6 +1,8 @@
 name: Run CI linter and pytest on FastApi-MQTT Package
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches: ["**"]
 
 jobs:
   tests:

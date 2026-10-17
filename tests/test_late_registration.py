@@ -27,7 +27,8 @@ class FakeConnection:
 
     def connack(self, flags: int = 0, rc: int = 0, properties: Any = None) -> None:
         self.connected = True
-        self.mqtt._FastMQTT__on_connect(self.mqtt.client, flags, rc, properties)
+        # same call gmqtt makes on a successful CONNACK
+        self.mqtt.client.on_connect(flags, rc, properties)
 
     def disconnect(self) -> None:
         self.connected = False
