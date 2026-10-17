@@ -31,6 +31,14 @@ registered at module level. Handlers registered after `mqtt_startup()` also work
 topics are subscribed right away, and `on_connect` handlers are called right away
 with the current connection.
 
+`mqtt_shutdown()` accepts an optional MQTT 5.0 DISCONNECT reason code and properties.
+For example, reason code 4 (disconnect with will message) asks the broker to publish
+the will message:
+
+```python
+await mqtt.mqtt_shutdown(reason_code=4, reason_string="shutting down")
+```
+
 ### `MQTTConfig` class
 
 The class has the following attributes:
