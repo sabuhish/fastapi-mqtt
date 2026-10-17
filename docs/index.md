@@ -7,8 +7,8 @@ Fastapi-mqtt is the client for working with MQTT.
 
 For more information about MQTT, please refer to here: [MQTT](mqtt.md)
 
-Fatapi-mqtt wraps around [gmqtt](https://github.com/wialon/gmqtt) module. Gmqtt Python async client for MQTT client implementation.
-The module has the support of MQTT version 5.0 protocol
+Fastapi-mqtt wraps around the [gmqtt](https://github.com/wialon/gmqtt) module, a Python async MQTT client.
+The module supports the MQTT version 5.0 protocol.
 
 ## Badges
 
@@ -20,12 +20,13 @@ The module has the support of MQTT version 5.0 protocol
 
 ## Available Features
 
-MQTT specification avaliable with help decarator methods using callbacks:
+MQTT specification available with the help of decorator methods using callbacks:
 
-- `on_connect() `
-- `on_disconnect() `
-- `on_subscribe() `
-- `on_message() `
+- `on_connect()`
+- `on_disconnect()`
+- `on_subscribe()`
+- `on_message()`
+- `subscribe(topic)`
 
 MQTT Settings available with `pydantic` class:
 

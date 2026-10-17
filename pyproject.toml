@@ -1,50 +1,53 @@
-[tool.poetry]
+[project]
 name = "fastapi-mqtt"
 version = "2.2.0"
 description = "fastapi-mqtt is extension for MQTT protocol"
-authors = ["sabuhish <sabuhi.shukurov@gmail.com>"]
+authors = [{ name = "Sabuhi Shukurov", email = "sabuhi.shukurov@gmail.com" }]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/sabuhish/fastapi-mqtt"
-repository = "https://github.com/sabuhish/fastapi-mqtt"
+requires-python = ">=3.12"
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3 :: Only",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-[tool.poetry.dependencies]
-python = "^3.8"
-gmqtt = ">=0.6.11"
-pydantic = ">=2.3.0"
+dependencies = [
+    "gmqtt>=0.8.0",
+    "pydantic>=2.14.1",
+]
 
-[tool.poetry.dev-dependencies]
-pre-commit = ">=2.9.2,<3"
-fastapi = ">=0.103"
-uvicorn = ">=0.19.0"
-pytest = ">=7.0.0"
-pytest-cov = ">=3.0.0"
-pytest-asyncio = ">=0.16.0"
-async-asgi-testclient = ">=1.4.11"
+[project.urls]
+homepage = "https://github.com/sabuhish/fastapi-mqtt"
+repository = "https://github.com/sabuhish/fastapi-mqtt"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.7.0",
+    "fastapi>=0.143.3",
+    "uvicorn>=0.54.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-asyncio>=1.4.0",
+    "async-asgi-testclient>=1.4.11",
+    "mkdocs>=1.6.1,<2",
+    "mkdocs-material>=9.7.7",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=2.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 fix = true
 line-length = 100
 
 [tool.ruff.lint]
-select = ["A", "ASYNC", "B", "BLE", "C", "C4", "E", "F", "FA", "I", "INT", "N", "PIE", "PTH", "RUF", "SIM", "TCH", "W", "YTT"]
+select = ["A", "ASYNC", "B", "BLE", "C", "E", "F", "I", "N", "PIE", "PTH", "RUF", "SIM", "TCH", "W"]
+ignore = ["TC006"]  # quoted types in typing.cast()
 
 [tool.ruff.lint.isort]
 known-first-party = ["fastapi_mqtt"]

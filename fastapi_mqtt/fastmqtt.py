@@ -40,7 +40,9 @@ class FastMQTT:
                             purges all information from any previous persistent session.
                             The client_id  identifies the session.
 
-    optimistic_acknowledgement:  #TODO more info needed
+    optimistic_acknowledgement: If True (default), QoS 1/2 messages are acknowledged
+                            before the message handlers run. If False, they are acknowledged
+                            after the handlers finish. Only applies to MQTT 5.0.
 
     mqtt_logger: Optional logging.Logger to use.
     """
@@ -58,23 +60,28 @@ class FastMQTT:
         if not client_id:
             client_id = uuid.uuid4().hex
 
-        self.client: MQTTClient = MQTTClient(client_id, **kwargs)
+        self.client: MQTTClient = MQTTClient(
+            client_id,
+            clean_session=clean_session,
+            optimistic_acknowledgement=optimistic_acknowledgement,
+            **kwargs,
+        )
         self.config: MQTTConfig = config
 
-        self.client._clean_session = clean_session
         self.client._username = config.username
         self.client._password = config.password
         self.client._host = config.host
         self.client._port = config.port
         self.client._keepalive = config.keepalive
         self.client._ssl = config.ssl
-        self.client.optimistic_acknowledgement = optimistic_acknowledgement
         self.client._connect_properties = kwargs
         self.client.on_message = self.__on_message
         self.client.on_connect = self.__on_connect
         self.subscriptions: Dict[str, Tuple[Subscription, List[MQTTMessageHandler]]] = {}
         self._logger = mqtt_logger or log_info
         self.mqtt_handlers = MQTTHandlers(self.client, self._logger)
+        # CONNACK args of the last successful connection, to call late `on_connect` handlers
+        self._connack: Optional[Tuple[int, int, Any]] = None
 
         if (
             self.config.will_message_topic
@@ -87,8 +94,7 @@ class FastMQTT:
                 will_delay_interval=self.config.will_delay_interval,
             )
             self._logger.debug(
-                "WILL MESSAGE INITIALIZED: "
-                "topic -> %s\n payload -> %s\n will_delay_interval -> %s",
+                "WILL MESSAGE INITIALIZED: topic -> %s\n payload -> %s\n will_delay_interval -> %s",
                 self.config.will_message_topic,
                 self.config.will_message_payload,
                 self.config.will_delay_interval,
@@ -157,13 +163,16 @@ class FastMQTT:
         Generic on connecting handler, it would call user handler if defined.
         Will perform subscription for given topics.
         It cannot be done earlier, since subscription relies on connection.
+        Registered topics are subscribed before calling the user handler, so topics
+        registered from inside it are subscribed once, by the `subscribe` decorator.
         """
-        if self.mqtt_handlers.user_connect_handler is not None:
-            self.mqtt_handlers.user_connect_handler(client, flags, rc, properties)
-
-        for topic in self.subscriptions:
+        self._connack = (flags, rc, properties)
+        for topic in list(self.subscriptions):
             self._logger.debug("Subscribing for %s", topic)
             self.client.subscribe(self.subscriptions[topic][0])
+
+        if self.mqtt_handlers.user_connect_handler is not None:
+            self.mqtt_handlers.user_connect_handler(client, flags, rc, properties)
 
     async def __on_message(
         self, client: MQTTClient, topic: str, payload: bytes, qos: int, properties: Any
@@ -252,6 +261,9 @@ class FastMQTT:
     ) -> Callable[..., Any]:
         """
         Decorator method used to subscribe for specific topics.
+
+        Topics are subscribed on every (re)connection. If the client is already
+        connected when the decorator runs, they are also subscribed right away.
         """
 
         def subscribe_handler(handler: MQTTMessageHandler) -> MQTTMessageHandler:
@@ -269,8 +281,8 @@ class FastMQTT:
                     self.subscriptions[topic] = (subscription, [handler])
                 else:
                     # Use the most restrictive field of the same subscription
-                    old_subscription = self.subscriptions[topic][0]
-                    new_subscription = Subscription(
+                    old_subscription, handlers = self.subscriptions[topic]
+                    subscription = Subscription(
                         topic,
                         max(qos, old_subscription.qos),
                         no_local or old_subscription.no_local,
@@ -281,11 +293,12 @@ class FastMQTT:
                         ),
                         old_subscription.subscription_identifier or subscription_identifier,
                     )
-                    self.subscriptions[topic] = (
-                        new_subscription,
-                        self.subscriptions[topic][1],
-                    )
-                    self.subscriptions[topic][1].append(handler)
+                    handlers.append(handler)
+                    self.subscriptions[topic] = (subscription, handlers)
+
+                if self.client.is_connected:
+                    self._logger.debug("Already connected, subscribing for %s", topic)
+                    self.client.subscribe(subscription)
             return handler
 
         return subscribe_handler
@@ -293,11 +306,19 @@ class FastMQTT:
     def on_connect(self) -> Callable[..., Any]:
         """
         Decorator method used to handle the connection to MQTT.
+
+        The handler runs on every (re)connection. If the client is already
+        connected when the decorator runs, it is also called right away
+        with the CONNACK args of the current connection.
         """
 
         def connect_handler(handler: MQTTConnectionHandler) -> MQTTConnectionHandler:
             self._logger.debug("handler accepted")
-            return self.mqtt_handlers.on_connect(handler)
+            self.mqtt_handlers.on_connect(handler)
+            if self.client.is_connected and self._connack is not None:
+                self._logger.debug("Already connected, calling on_connect handler")
+                handler(self.client, *self._connack)
+            return handler
 
         return connect_handler
 

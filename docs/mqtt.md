@@ -1,6 +1,4 @@
-## Short Information
-
-Short information about Message Queuing Telemetry Transport
+# Short information about Message Queuing Telemetry Transport
 
 We will cover some basics and later on will dive in advance.
 This information is for beginners and for those who want to gain more knowledge.
@@ -23,10 +21,10 @@ So to sum up above:
 #### MQTT Components
 
 - `Broker`, which is the server that handles the data transmission between the clients.
-- A ` topic`, is the place a device wants to put or retrieve a message to/from.
-- The message (` payload`), is the data that a device receives when subscribing to a topic or sends when publishing to a topic.
+- A `topic`, is the place a device wants to put or retrieve a message to/from.
+- The message (`payload`), is the data that a device receives when subscribing to a topic or sends when publishing to a topic.
 - `Publish`, is the process a device does to send its message to the broker.
-- ` Subscribe`, where a device does to retrieve a message from the broker.
+- `Subscribe`, where a device does to retrieve a message from the broker.
 
 In MQTT a publisher publishes messages on a topic and a subscriber must subscribe to that topic to view the message. MQTT is based on clients and a server. Likewise, the server is the guy who is responsible for handling the client's requests for receiving or sending data between each other. MQTT `server` is called a `broker` and the `clients` are simply the `connected devices`. When a `device (a client)` wants to send data to the `broker`, we call this operation a `publish`. When a device (a `client`) wants to receive data from the broker, we call this operation a `subscribe`. These clients are publishing and subscribing to topics. So, the broker here is the one that handles the publishing/subscribing actions to the target topics.
 
@@ -48,13 +46,13 @@ The device defines the topic it wants to publish on, ex: 'temp', then, it publis
 #### MQTT Topic
 
 Publishers publish to a broker, and the subscribers subscribe to that same broker and they subscribe to the same topic.
-They will receive all messages sent by that publisher. Publisher publishes throughout the topic and subscribers listen to the same topic to retrieve it. Topics are created dynamically when someone subscribes to a topic someone publishes a message to a topic with the retained message set to True.
+They will receive all messages sent by that publisher. Publisher publishes throughout the topic and subscribers listen to the same topic to retrieve it. Topics are created dynamically when someone subscribes to a topic or someone publishes a message to a topic with the retained message set to True.
 
 ##### Important Notes
 
-- `Topic names are case sensitive.
-- `Use utf8`.
-- `Must consist at least one character to be valid`.
+- Topic names are case sensitive.
+- Use UTF-8.
+- Must consist of at least one character to be valid.
 - Topics do not need to begin with a `/` and in fact, stating your topic structure with a `/` is considered bad practice.
 
 #### Subscribing to Topics
@@ -62,16 +60,15 @@ They will receive all messages sent by that publisher. Publisher publishes throu
 The following are all valid topic structures for houses with sensors in several rooms. It is a design choice.
 
 ```
-house/room1/senson1
+house/room1/sensor1
 house/room2/sensor1
-house/room2/sensor1
-house-room1-sensonr1
+house-room1-sensor1
 house-room2-sensor1
 house/room1-sensor1
 house/room2-sensor1
 ```
 
-When subscribing to multiple topics two wildcard characters can be used. Wildcards can only be used to denote a level or multi-levels i.e: `/house/#`
+When subscribing to multiple topics two wildcard characters can be used. Wildcards can only be used to denote a level or multi-levels i.e: `house/#`.
 
 ```
 # (hash character) - multi-level wildcard
@@ -80,7 +77,7 @@ When subscribing to multiple topics two wildcard characters can be used. Wildcar
 
 ##### Wildcards
 
-The client can subscribe to an individual or multiple topics. For multiple, you can use wild characters - `#` multi-level wildcard. For single-level - `+` single-level charter. Wildcards can only be used to denote level or multi-levels: i.e: `/house/#` and it will basically subscribe you all topics under that level slash house forward
+The client can subscribe to an individual or multiple topics. For multiple, you can use wild characters - `#` multi-level wildcard. For single-level - `+` single-level character. Wildcards can only be used to denote level or multi-levels: i.e: `house/#` subscribes you to all topics under `house/`.
 
 Invalid Topic Subscriptions:
 
@@ -111,11 +108,11 @@ Because it has a side-light, it is not main-light.
 
 #### Publishing to Topics
 
-A client can only publish an individual topic. That is, using wildcards when publishing is not allowed. To publish a message on two topics you need to publish the message twice.
+A client can only publish to an individual topic. That is, using wildcards when publishing is not allowed. To publish a message to two topics you need to publish the message twice.
 
 #### MQTT Protocol
 
-In comparison to HTTP, MQTT Protocol ensures high delivery guarantees. According to measurements in 3G networks, the throughout of MQTT is 93 times faster than HTTP.
+In comparison to HTTP, MQTT Protocol ensures high delivery guarantees. According to measurements in 3G networks, the throughput of MQTT is 93 times faster than HTTP.
 
 There are 3 levels of Quality of Services:
 
@@ -133,7 +130,7 @@ HTTP is a request-response protocol for client-server computing and is not alway
 - UNSUBSCRIBE
 - DISCONNECT
 
-Whereas HTTP specifications are much longer.HTTP is worthy and extendable. But MQTT is more suitable when it is referred to as IoT development.
+Whereas HTTP specifications are much longer. HTTP is worthy and extendable. But MQTT is more suitable when it is referred to as IoT development.
 
 MQTT uses a command and command acknowledgment format. That means each command has an associated acknowledgment. Topic names, Client ID, username, and passwords are encoded as UTF-8 strings. The Payload excluding MQTT protocol information like Client ID etc. is binary data and the content and format are application-specific. The fixed header field consists of the control field and the variable-length packet length field.
 
@@ -142,8 +139,6 @@ It is interesting that the client ID field is sent as the first part of the payl
 
 #### References
 
-`https://github.com/mqtt/mqtt.github.io/wikis`
-
-`https://blogs.windows.com/buildingapps/2016/03/14/when-to-use-a-http-call-instead-of-a-websocket-or-http-2-0/#ojUEP8d4hQBbeDVO.97`
-
-`http://www.steves-internet-guide.com/mqtt/`
+- <https://github.com/mqtt/mqtt.github.io/wiki>
+- <https://blogs.windows.com/buildingapps/2016/03/14/when-to-use-a-http-call-instead-of-a-websocket-or-http-2-0/>
+- <http://www.steves-internet-guide.com/mqtt/>

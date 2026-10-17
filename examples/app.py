@@ -23,7 +23,7 @@ app = FastAPI(lifespan=_lifespan)
 
 @fast_mqtt.on_connect()
 def connect(client: MQTTClient, flags: int, rc: int, properties: Any):
-    client.subscribe("/mqtt")  # subscribing mqtt topic
+    client.subscribe("mqtt")  # subscribing mqtt topic
     print("Connected: ", client, flags, rc, properties)
 
 
@@ -58,5 +58,5 @@ def subscribe(client: MQTTClient, mid: int, qos: int, properties: Any):
 
 @app.get("/test")
 async def func():
-    fast_mqtt.publish("/mqtt", "Hello from Fastapi")  # publishing mqtt topic
+    fast_mqtt.publish("mqtt", "Hello from Fastapi")  # publishing mqtt topic
     return {"result": True, "message": "Published"}
