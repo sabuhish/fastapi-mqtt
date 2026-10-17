@@ -12,23 +12,14 @@ The module supports the MQTT version 5.0 protocol.
 
 ## Badges
 
-[![MIT licensed](https://img.shields.io/github/license/sabuhish/fastapi-mqtt)](https://raw.githubusercontent.com/sabuhish/fastapi-mqtt/master/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/sabuhish/fastapi-mqtt.svg)](https://github.com/sabuhish/fastapi-mqtt/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/sabuhish/fastapi-mqtt.svg)](https://github.com/sabuhish/fastapi-mqtt/network)
+[![MIT licensed](https://img.shields.io/github/license/sabuhish/fastapi-mqtt)](https://github.com/sabuhish/fastapi-mqtt/blob/master/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/sabuhish/fastapi-mqtt.svg)](https://github.com/sabuhish/fastapi-mqtt)
+[![GitHub forks](https://img.shields.io/github/forks/sabuhish/fastapi-mqtt.svg)](https://github.com/sabuhish/fastapi-mqtt/forks)
 [![GitHub issues](https://img.shields.io/github/issues-raw/sabuhish/fastapi-mqtt)](https://github.com/sabuhish/fastapi-mqtt/issues)
-[![Downloads](https://pepy.tech/badge/fastapi-mqtt)](https://pepy.tech/project/fastapi-mqtt)
 
 ## Available Features
 
-MQTT specification available with the help of decorator methods using callbacks:
-
-- `on_connect()`
-- `on_disconnect()`
-- `on_subscribe()`
-- `on_message()`
-- `subscribe(topic)`
-
-MQTT Settings available with `pydantic` class:
-
-- `Authentication` to broker with credentials
-- `unsubscribe` certain topics and `publish` to certain topics
+- Subscribe to topics with decorated handlers, publish to topics
+- [Pydantic models](models.md) for message payloads, to receive and publish typed messages
+- MQTT 5.0, with [callbacks](advanced.md#connection-callbacks) for connection events
+- MQTT settings with a `pydantic` class, authentication to the broker with credentials

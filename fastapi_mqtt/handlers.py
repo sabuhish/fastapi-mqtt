@@ -10,6 +10,8 @@ MQTTMessageHandler = Callable[[MQTTClient, str, bytes, int, Any], Awaitable[Any]
 MQTTConnectionHandler = Callable[[MQTTClient, int, int, Any], Any]
 # client: MQTTClient, mid: int, qos: int, properties: Any
 MQTTSubscriptionHandler = Callable[[MQTTClient, int, int, Any], Any]
+# client: MQTTClient, topic: str, payload: bytes, error: pydantic.ValidationError
+MQTTPayloadErrorHandler = Callable[[MQTTClient, str, bytes, Any], Any]
 # client: MQTTClient, packet: bytes, exc=None
 MQTTDisconnectHandler = Callable[[MQTTClient, bytes, Optional[Exception]], Any]
 
@@ -20,6 +22,7 @@ class MQTTHandlers:
         self.client = client
         self.user_message_handler: Optional[MQTTMessageHandler] = None
         self.user_connect_handler: Optional[MQTTConnectionHandler] = None
+        self.user_payload_error_handler: Optional[MQTTPayloadErrorHandler] = None
 
     def on_message(self, handler: MQTTMessageHandler) -> MQTTMessageHandler:
         self._logger.info("on_message handler accepted")
@@ -36,6 +39,11 @@ class MQTTHandlers:
 
     def on_disconnect(self, handler: MQTTDisconnectHandler) -> MQTTDisconnectHandler:
         self.client.on_disconnect = handler
+        return handler
+
+    def on_payload_error(self, handler: MQTTPayloadErrorHandler) -> MQTTPayloadErrorHandler:
+        self._logger.info("on_payload_error handler accepted")
+        self.user_payload_error_handler = handler
         return handler
 
     def on_connect(self, handler: MQTTConnectionHandler) -> MQTTConnectionHandler:
