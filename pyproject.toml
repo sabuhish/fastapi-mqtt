@@ -1,6 +1,6 @@
 [project]
 name = "fastapi-mqtt"
-version = "2.2.0"
+version = "3.0.0"
 description = "fastapi-mqtt is extension for MQTT protocol"
 authors = [{ name = "Sabuhi Shukurov", email = "sabuhi.shukurov@gmail.com" }]
 license = "MIT"
