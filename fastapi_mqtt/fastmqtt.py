@@ -235,9 +235,16 @@ class FastMQTT:
         """Initial connection for MQTT client, for lifespan startup."""
         await self.connection()
 
-    async def mqtt_shutdown(self) -> None:
-        """Final disconnection for MQTT client, for lifespan shutdown."""
-        await self.client.disconnect()
+    async def mqtt_shutdown(self, reason_code: int = 0, **properties: Any) -> None:
+        """
+        Final disconnection for MQTT client, for lifespan shutdown.
+
+        reason_code: MQTT 5.0 DISCONNECT reason code, defaults to 0 (normal disconnection).
+            For example, 4 (disconnect with will message) asks the broker to publish
+            the will message. Ignored with MQTT 3.1.1.
+        properties: MQTT 5.0 DISCONNECT properties, like `reason_string`.
+        """
+        await self.client.disconnect(reason_code, **properties)
 
     def init_app(self, fastapi_app) -> None:  # pragma: no cover
         """Add startup and shutdown event handlers for app without lifespan."""
