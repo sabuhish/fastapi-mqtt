@@ -20,9 +20,7 @@ class FakeConnection:
         self.mqtt = mqtt
         self.connected = False
         self.subscribed: list[str] = []
-        monkeypatch.setattr(
-            MQTTClient, "is_connected", property(lambda _client: self.connected)
-        )
+        monkeypatch.setattr(MQTTClient, "is_connected", property(lambda _client: self.connected))
         monkeypatch.setattr(
             mqtt.client, "subscribe", lambda sub, **_kw: self.subscribed.append(sub.topic)
         )
