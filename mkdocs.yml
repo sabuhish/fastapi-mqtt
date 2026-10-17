@@ -27,6 +27,9 @@ nav:
   - FastApi MQTT: index.md
   - 🔨 Installation: install.md
   - 🕹 Getting Started: getting-started.md
+  - Pydantic Models: models.md
+  - Configuration: configuration.md
+  - Advanced: advanced.md
   - Example: example.md
   - MQTT: mqtt.md
   - Contribution: contribute.md

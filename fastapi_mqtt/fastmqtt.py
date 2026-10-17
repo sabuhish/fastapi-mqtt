@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import logging
 import uuid
 from itertools import zip_longest
@@ -7,6 +8,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from gmqtt import Client as MQTTClient
 from gmqtt import Message, Subscription
 from gmqtt.mqtt.constants import MQTTv50
+from pydantic import BaseModel, ValidationError
 
 from .config import MQTTConfig
 from .handlers import (
@@ -14,8 +16,10 @@ from .handlers import (
     MQTTDisconnectHandler,
     MQTTHandlers,
     MQTTMessageHandler,
+    MQTTPayloadErrorHandler,
     MQTTSubscriptionHandler,
 )
+from .payloads import describe_errors, handler_name, model_spec
 
 try:
     from uvicorn.config import logger as log_info
@@ -209,12 +213,14 @@ class FastMQTT:
 
         message_or_topic: topic name
 
-        payload: message payload
+        payload: message payload. A pydantic model is sent as JSON.
 
         qos: Quality of Assurance
 
         retain:
         """
+        if isinstance(payload, BaseModel):
+            payload = payload.model_dump_json()
         return self.client.publish(
             message_or_topic, payload=payload, qos=qos, retain=retain, **kwargs
         )
@@ -257,6 +263,62 @@ class FastMQTT:
         async def shutdown() -> None:
             await self.mqtt_shutdown()
 
+    def _message_handler(self, handler: Callable[..., Any]) -> MQTTMessageHandler:
+        """
+        Adapt a subscription handler to the generic message handler call.
+
+        Handlers without a parameter typed as a pydantic model are called as usual,
+        with (client, topic, payload, qos, properties). For a handler with one,
+        the payload is parsed into that model, and the other parameters are passed
+        by name, from client, topic, payload, qos and properties.
+        Messages with an invalid payload go to the `on_payload_error` handler,
+        or are logged and skipped.
+        """
+        spec = model_spec(handler)
+        if spec is None:
+            return handler
+        model_param, model, args = spec
+
+        async def model_handler(
+            client: MQTTClient, topic: str, payload: bytes, qos: int, properties: Any
+        ) -> Any:
+            try:
+                item = model.model_validate_json(payload)
+            except ValidationError as error:
+                await self._payload_error(handler, client, topic, payload, error)
+                return None
+            values = {
+                "client": client,
+                "topic": topic,
+                "payload": payload,
+                "qos": qos,
+                "properties": properties,
+            }
+            return await handler(**{model_param: item}, **{param: values[param] for param in args})
+
+        return model_handler
+
+    async def _payload_error(
+        self,
+        handler: Callable[..., Any],
+        client: MQTTClient,
+        topic: str,
+        payload: bytes,
+        error: ValidationError,
+    ) -> None:
+        error_handler = self.mqtt_handlers.user_payload_error_handler
+        if error_handler is None:
+            self._logger.warning(
+                "Invalid payload on topic %s for handler %s: %s",
+                topic,
+                handler_name(handler),
+                describe_errors(error),
+            )
+            return
+        result = error_handler(client, topic, payload, error)
+        if inspect.isawaitable(result):
+            await result
+
     def subscribe(
         self,
         *topics,
@@ -271,10 +333,18 @@ class FastMQTT:
 
         Topics are subscribed on every (re)connection. If the client is already
         connected when the decorator runs, they are also subscribed right away.
+
+        Handlers get (client, topic, payload, qos, properties). If a handler has a
+        parameter typed as a pydantic model, the payload is parsed into that model instead,
+        and the other parameters are passed by name:
+
+            @mqtt.subscribe("sensors/+/temperature")
+            async def temperature(item: Temperature, topic: str): ...
         """
 
         def subscribe_handler(handler: MQTTMessageHandler) -> MQTTMessageHandler:
             self._logger.debug("Subscribe for topics: %s", topics)
+            message_handler = self._message_handler(handler)
             for topic in topics:
                 if topic not in self.subscriptions:
                     subscription = Subscription(
@@ -285,7 +355,7 @@ class FastMQTT:
                         retain_handling_options,
                         subscription_identifier,
                     )
-                    self.subscriptions[topic] = (subscription, [handler])
+                    self.subscriptions[topic] = (subscription, [message_handler])
                 else:
                     # Use the most restrictive field of the same subscription
                     old_subscription, handlers = self.subscriptions[topic]
@@ -300,7 +370,7 @@ class FastMQTT:
                         ),
                         old_subscription.subscription_identifier or subscription_identifier,
                     )
-                    handlers.append(handler)
+                    handlers.append(message_handler)
                     self.subscriptions[topic] = (subscription, handlers)
 
                 if self.client.is_connected:
@@ -339,6 +409,21 @@ class FastMQTT:
             return self.mqtt_handlers.on_message(handler)
 
         return message_handler
+
+    def on_payload_error(self) -> Callable[..., Any]:
+        """
+        Decorator method used to handle messages with a payload that is not valid
+        for the pydantic model of a subscription handler.
+
+        The handler gets (client, topic, payload, error), with the pydantic ValidationError.
+        Without it, these messages are logged as a warning and skipped.
+        """
+
+        def payload_error_handler(handler: MQTTPayloadErrorHandler) -> MQTTPayloadErrorHandler:
+            self._logger.debug("on_payload_error handler accepted")
+            return self.mqtt_handlers.on_payload_error(handler)
+
+        return payload_error_handler
 
     def on_disconnect(self) -> Callable[..., Any]:
         """
