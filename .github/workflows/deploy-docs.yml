@@ -9,9 +9,9 @@ jobs:
     if: github.repository == 'sabuhish/fastapi-mqtt'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
-          python-version: 3.x
-      - run: pip install mkdocs>=1.1.2  mkdocs-material>=6.1.5 mkdocs-markdownextradata-plugin>=0.1.9
+          python-version: "3.12"
+      - run: pip install "mkdocs>=1.6.1,<2" "mkdocs-material>=9.7.7"
       - run: mkdocs gh-deploy --force

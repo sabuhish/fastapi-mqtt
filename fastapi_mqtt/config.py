@@ -14,7 +14,7 @@ class MQTTConfig(BaseModel):
 
     ssl: an SSL/TLS transport is created (by default a plain TCP transport is created)
         In case of an ssl.SSLContext object, context is used to create the transport.
-        Alternately passing bool value, will set  a default context,
+        Alternately passing bool value, will set a default context,
         which is calls ssl.create_default_context().
 
     keepalive: Maximum period in seconds between communications with the broker.
@@ -24,15 +24,16 @@ class MQTTConfig(BaseModel):
     username: username for authentication, defaults to None
     password: password for authentication, defaults to None
 
-    version: MQTT broker version to use, defaults to  MQTTv50.
+    version: MQTT broker version to use, defaults to MQTTv50.
         According to gmqtt.Client if the broker does not support 5.0 protocol version,
         responds with proper CONNACK reason code,
         the client will downgrade to 3.1 and reconnect automatically.
 
-    reconnect_retries && reconnect_delay: Connected MQTT client always tries to reconnect,
-        in case of lost connections. The number of reconnect attempts is unlimited.
-        For changing this behavior give reconnect_retries and reconnect_delay values.
-        For more info: # https://github.com/wialon/gmqtt#reconnects
+    reconnect_retries: Number of failed reconnect attempts allowed after a lost connection,
+        before giving up (gmqtt makes one more attempt than this number).
+        Defaults to -1, which means unlimited attempts.
+    reconnect_delay: Delay in seconds between reconnect attempts, defaults to 6.
+        For more info: https://github.com/wialon/gmqtt#reconnects
 
     The last three parameters are used after the client disconnects abnormally
 
@@ -49,8 +50,8 @@ class MQTTConfig(BaseModel):
     password: Optional[str] = None
     version: int = Field(default=MQTTv50, ge=4, le=5)
 
-    reconnect_retries: Optional[int] = 1
-    reconnect_delay: Optional[int] = 6
+    reconnect_retries: int = Field(default=-1, ge=-1)
+    reconnect_delay: int = Field(default=6, ge=0)
 
     will_message_topic: Optional[str] = None
     will_message_payload: Optional[str] = None

@@ -1,15 +1,17 @@
-minimum_pre_commit_version: 2.9.2
+minimum_pre_commit_version: 4.0.0
 repos:
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.4.4
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.1
     hooks:
-      - id: ruff
+      - id: ruff-check
+        types_or: [python, pyi]
         args:
           - --fix
       - id: ruff-format
+        types_or: [python, pyi]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: "v4.6.0"
+    rev: "v6.0.0"
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
@@ -24,8 +26,9 @@ repos:
         types_or: [yaml, markdown]
 
   - repo: "https://github.com/pre-commit/mirrors-mypy"
-    rev: "v1.10.0"
+    rev: "v2.4.0"
     hooks:
       - id: "mypy"
         additional_dependencies:
           - pydantic
+          - gmqtt

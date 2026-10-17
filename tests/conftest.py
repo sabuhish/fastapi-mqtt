@@ -14,9 +14,9 @@ from fastapi_mqtt.config import MQTTConfig
 from fastapi_mqtt.fastmqtt import FastMQTT
 
 # Run MQTT broker in background for tests with:
-# `docker run -d -p 9001:9001 -p 1883:1883 eclipse-mosquitto:1.6.15`
-# set `TEST_BROKER_HOST=localhost` to use against a local broker
-TEST_BROKER_HOST = os.getenv("TEST_BROKER_HOST", default="test.mosquitto.org")
+# `docker run -d --rm -p 1883:1883 eclipse-mosquitto:1.6.15`
+# set `TEST_BROKER_HOST` to use another broker, like `test.mosquitto.org`
+TEST_BROKER_HOST = os.getenv("TEST_BROKER_HOST", default="localhost")
 TEST_BROKER_USER = "testuser" if TEST_BROKER_HOST != "test.mosquitto.org" else None
 TEST_BROKER_PWD = "secret" if TEST_BROKER_HOST != "test.mosquitto.org" else None
 

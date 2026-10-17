@@ -1,5 +1,5 @@
 site_name: FastApi-MQTT
-site_url:
+site_url: https://sabuhish.github.io/fastapi-mqtt/
 site_description: fastapi-mqtt is client for MQTT protocol
 dev_addr: 127.0.0.1:8080
 
@@ -18,8 +18,6 @@ edit_uri: ""
 
 plugins:
   - search
-  - markdownextradata:
-      data: data
 
 markdown_extensions:
   - toc:

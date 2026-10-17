@@ -20,19 +20,31 @@ Please refer to each project's style and contribution guidelines for submitting 
 
 ## Before contributing, here is how to install
 
+Requirements: Python 3.12+ and [Poetry](https://python-poetry.org/docs/#installation) 2.x.
+
 ```sh
 git clone https://github.com/sabuhish/fastapi-mqtt.git
 cd fastapi-mqtt
 poetry install
 # activate the poetry virtualenv
-poetry shell
+eval $(poetry env activate)
 # to make changes and validate them
 pre-commit install
-pre-commit install-hooks
 pre-commit run --all-files
-# to run the test suite
-pytest
 ```
+
+### Running tests
+
+Tests need an MQTT broker. Run a local one with Docker, the same version used in CI:
+
+```sh
+docker run -d --rm --name mqtt -p 1883:1883 eclipse-mosquitto:1.6.15
+pytest
+docker stop mqtt
+```
+
+To run the tests against another broker, set its host in `TEST_BROKER_HOST`,
+like `TEST_BROKER_HOST=test.mosquitto.org pytest` for the public test broker.
 
 Explore the fastapi app **examples** and run them with uvicorn
 
@@ -44,8 +56,8 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 
 ### Code formatting
 
-This project uses `pre-commit` to apply multiple linters to the code changes _before_ it's commited.
+This project uses `pre-commit` to apply multiple linters to the code changes _before_ they're committed.
 
 You can invoke it anytime by running `pre-commit run --all-files`.
 
-Install the hook with `pre-commit install-hooks` to trigger it when commiting changes in your branch.
+Install the git hook with `pre-commit install` to trigger it when committing changes.

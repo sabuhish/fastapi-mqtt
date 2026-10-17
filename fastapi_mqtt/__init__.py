@@ -15,4 +15,4 @@ __credits__ = [
     "Jeremy T. Hetzel",
 ]
 
-__all__ = ["FastMQTT", "MQTTConfig", "MQTTClient"]
+__all__ = ["FastMQTT", "MQTTClient", "MQTTConfig"]

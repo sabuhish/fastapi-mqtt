@@ -1,6 +1,8 @@
 name: Run CI linter and pytest on FastApi-MQTT Package
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches: ["**"]
 
 jobs:
   tests:
@@ -14,17 +16,17 @@ jobs:
           container-name: "mqtt"
 
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Set up python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v7
         with:
-          python-version: 3.11
+          python-version: "3.12"
 
       - name: Run Poetry image
-        uses: abatilo/actions-poetry@v2.0.0
+        uses: abatilo/actions-poetry@v4
         with:
-          poetry-version: 1.6.1
+          poetry-version: 2.4.0
 
       - name: Install library
         run: poetry install --no-interaction

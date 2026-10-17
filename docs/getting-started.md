@@ -1,26 +1,39 @@
 ### 🕹 Guide
 
-After installing the module you setup your `FastApi` app:
+After installing the module you set up your `FastApi` app.
 
-The main classes are `FastMQTT` and `MQTTConfig`
+The main classes are `FastMQTT` and `MQTTConfig`. The client connects to the broker
+in the app lifespan:
 
 ```python
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi_mqtt import FastMQTT, MQTTConfig
 
-app = FastAPI()
-
 mqtt_config = MQTTConfig()
 
-mqtt = FastMQTT(
-    config=mqtt_config
-)
+mqtt = FastMQTT(config=mqtt_config)
 
+
+@asynccontextmanager
+async def _lifespan(_app: FastAPI):
+    await mqtt.mqtt_startup()
+    yield
+    await mqtt.mqtt_shutdown()
+
+
+app = FastAPI(lifespan=_lifespan)
 ```
+
+The decorated handlers (`@mqtt.on_connect()`, `@mqtt.subscribe(...)`, etc.) are usually
+registered at module level. Handlers registered after `mqtt_startup()` also work:
+topics are subscribed right away, and `on_connect` handlers are called right away
+with the current connection.
 
 ### `MQTTConfig` class
 
-the class has the following attributes
+The class has the following attributes:
 
 - host: To connect MQTT broker, defaults to localhost
 - port: To connect MQTT broker, defaults to 1883
@@ -42,10 +55,11 @@ the class has the following attributes
   responds with proper CONNACK reason code,
   the client will downgrade to 3.1 and reconnect automatically.
 
-- reconnect_retries && reconnect_delay: Connected MQTT client always tries to reconnect,
-  in case of lost connections. The number of reconnect attempts is unlimited.
-  For changing this behavior give reconnect_retries and reconnect_delay values.
-  For more info: # https://github.com/wialon/gmqtt#reconnects
+- reconnect_retries: Number of failed reconnect attempts allowed after a lost connection,
+  before giving up (gmqtt makes one more attempt than this number).
+  Defaults to -1, which means unlimited attempts.
+- reconnect_delay: Delay in seconds between reconnect attempts, defaults to 6.
+  For more info: [gmqtt reconnects](https://github.com/wialon/gmqtt#reconnects)
 
 The last three parameters are used after the client disconnects abnormally
 
@@ -55,12 +69,12 @@ The last three parameters are used after the client disconnects abnormally
 
 ### `FastMQTT` client
 
-сlient sets connection parameters before connecting and manipulating the MQTT service.
+The client sets connection parameters before connecting and manipulating the MQTT service.
 The object holds session information necessary to connect the MQTT broker.
 
 ### `FastMQTT` params
 
-client has the following parameters. The class object holds session information necessary to connect the MQTT broker.
+The client has the following parameters:
 
 - config: MQTTConfig config object
 
@@ -70,8 +84,12 @@ client has the following parameters. The class object holds session information 
   In a persistent session clean_session = False.
   The broker stores all subscriptions for the client.
   If the session is not persistent (clean_session = True).
-  The broker does not store anything for the client and \
-   purges all information from any previous persistent session.
+  The broker does not store anything for the client and
+  purges all information from any previous persistent session.
   The client_id identifies the session.
 
-- optimistic_acknowledgement
+- optimistic_acknowledgement: If True (default), QoS 1/2 messages are acknowledged
+  before the message handlers run. If False, they are acknowledged after the handlers finish.
+  Only applies to MQTT 5.0.
+
+- mqtt_logger: Optional `logging.Logger` to use.
