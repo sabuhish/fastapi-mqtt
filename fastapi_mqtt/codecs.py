@@ -17,7 +17,7 @@ def decode_error(
                 type=PydanticCustomError(
                     "payload_decode",
                     "Invalid {codec} payload: {reason}",
-                    {"codec": codec, "reason": str(exc)},
+                    {"codec": codec, "reason": str(exc) or type(exc).__name__},
                 ),
                 loc=(),
                 input=payload,

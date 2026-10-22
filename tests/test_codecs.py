@@ -213,3 +213,18 @@ def test_missing_pymongo_has_helpful_error(monkeypatch):
     monkeypatch.setitem(sys.modules, "bson", None)
     with pytest.raises(ImportError, match=r"fastapi-mqtt\[bson\]"):
         BSONCodec()
+
+
+async def test_decode_error_reason_is_never_empty():
+    mqtt = FastMQTT(config=MQTTConfig(), codec=MsgPackCodec())
+    errors = []
+
+    @mqtt.on_payload_error()
+    def on_error(client, topic, payload, error):
+        errors.append(error)
+
+    @mqtt.subscribe("topic")
+    async def handler(item: MyItem): ...
+
+    await _deliver(mqtt, "topic", b"\xc1")
+    assert errors[0].errors()[0]["ctx"]["reason"] != ""
