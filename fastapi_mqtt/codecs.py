@@ -82,3 +82,25 @@ class MsgPackCodec(Codec):
 
     def dumps(self, data: Any) -> bytes:
         return self._msgpack.packb(data, use_bin_type=True)
+
+
+class BSONCodec(Codec):
+    name = "bson"
+
+    def __init__(self) -> None:
+        try:
+            import bson
+        except ImportError as exc:
+            raise ImportError("BSONCodec needs pymongo: pip install fastapi-mqtt[bson]") from exc
+        if not hasattr(bson, "encode"):
+            raise ImportError(
+                "BSONCodec needs the bson moodule from pymongo, "
+                "the standalone 'bson' package from PyPI is not compatible"
+            )
+        self._bson = bson
+
+    def loads(self, payload: bytes) -> Any:
+        return self._bson.decode(payload)
+
+    def dumps(self, data: Any) -> bytes:
+        return self._bson.encode(data)

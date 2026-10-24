@@ -23,6 +23,7 @@ dependencies = [
 
 [project.optional-dependencies]
 msgpack = ["msgpack>=1.0"]
+bson = ["pymongo>=4"]
 
 [project.urls]
 homepage = "https://github.com/sabuhish/fastapi-mqtt"
@@ -40,6 +41,7 @@ dev = [
     "mkdocs>=1.6.1,<2",
     "mkdocs-material>=9.7.7",
     "msgpack>=1.0",
+    "pymongo>=4",
 ]
 
 [build-system]

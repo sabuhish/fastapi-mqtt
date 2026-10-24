@@ -4,11 +4,12 @@ import sys
 from datetime import datetime, timezone
 from typing import Any
 
+import bson
 import msgpack
 import pytest
-from pydantic import BaseModel, RootModel, ValidationError
+from pydantic import BaseModel, RootModel, types, ValidationError
 
-from fastapi_mqtt.codecs import Codec, JSONCodec, MsgPackCodec
+from fastapi_mqtt.codecs import BSONCodec, Codec, JSONCodec, MsgPackCodec
 from fastapi_mqtt.config import MQTTConfig
 from fastapi_mqtt.fastmqtt import FastMQTT
 
@@ -46,7 +47,7 @@ def test_default_codec_is_json():
     assert isinstance(FastMQTT(config=MQTTConfig()).codec, JSONCodec)
 
 
-@pytest.mark.parametrize("codec", [JSONCodec(), MsgPackCodec()])
+@pytest.mark.parametrize("codec", [JSONCodec(), MsgPackCodec(), BSONCodec()])
 def test_round_trip(codec):
     assert codec.decode(MyItem, codec.encode(MyItem(value=3))) == MyItem(value=3)
 
@@ -148,8 +149,100 @@ def test_missing_msgpack_has_helpful_error(monkeypatch):
         MsgPackCodec()
 
 
-@pytest.mark.parametrize("codec", [MsgPackCodec()])
-def test_round_trip_with_types_not_native_to_the_format(codec):
+async def test_custom_codec_with_loads_and_dumps(monkeypatch):
+    mqtt = FastMQTT(config=MQTTConfig(), codec=UpperJSONCodec())
+    received = []
+
+    @mqtt.subscribe("topic")
+    async def handler(item: MyItem):
+        received.append(item)
+
+    await _deliver(mqtt, "topic", b'{"value":3}')
+    sent = _capture_publish(mqtt, monkeypatch)
+    mqtt.publish("topic", MyItem(value=4))
+
+    assert received == [MyItem(value=3)]
+    assert sent == [b'{"VALUE":4}']
+
+
+@pytest.mark.parametrize("method", ["loads", "dumps"])
+def test_base_codec_methods_must_be_implemented(method):
+    with pytest.raises(NotImplementedError):
+        getattr(Codec(), method)(b"")
+
+
+# BSON TESTS
+
+
+def test_standalone_bson_package_is_rejected(monkeypatch):
+    monkeypatch.setitem(sys.modules, "bson", types.ModuleType("bson"))
+    with pytest.raises(ImportError, match="pymongo"):
+        BSONCodec()
+
+
+def test_missing_pymongo_has_helpful_error(monkeypatch):
+    monkeypatch.setitem(sys.modules, "bson", None)
+    with pytest.raises(ImportError, match=r"fastapi-mqtt\[bson\]"):
+        BSONCodec()
+
+
+async def test_bson_codec_for_subscribe_and_publish(monkeypatch):
+    mqtt = FastMQTT(config=MQTTConfig(), codec=BSONCodec())
+    received = []
+
+    @mqtt.subscribe("topic")
+    async def handler(item: MyItem):
+        received.append(item)
+
+    await _deliver(mqtt, "topic", bson.encode({"value": 23}))
+    sent = _capture_publish(mqtt, monkeypatch)
+    mqtt.publish("topic", MyItem(value=32))
+
+    assert received == [MyItem(value=23)]
+    assert sent == [bson.encode({"value": 32})]
+
+
+def test_bson_needs_object_at_top_level():
+    class Items(RootModel[list[MyItem]]):
+        pass
+
+    with pytest.raises(TypeError):
+        BSONCodec().encode(Items([MyItem(value=11)]))
+
+
+@pytest.mark.parametrize("payload", [b"", b"\x05\x00\x00\x00", b'{"value":1}'])
+async def test_invalid_bson_goes_to_payload_error(payload):
+    mqtt = FastMQTT(config=MQTTConfig(), codec=BSONCodec())
+    errors = []
+
+    @mqtt.on_payload_error()
+    def on_error(client, topic, payload, error):
+        errors.append(error)
+
+    @mqtt.subscribe("topic")
+    async def handler(item: MyItem): ...
+
+    await _deliver(mqtt, "topic", payload)
+
+    assert len(errors) == 1
+    assert isinstance(errors[0], ValidationError)
+
+
+async def test_bson_decode_error_log_has_no_input_values(caplog):
+    mqtt = FastMQTT(config=MQTTConfig(), codec=BSONCodec())
+
+    @mqtt.subscribe("topic")
+    async def handler(item: MyItem): ...
+
+    with caplog.at_level(logging.WARNING):
+        await _deliver(mqtt, "topic", b"secret-value")
+
+    assert "Invalid bson payload" in caplog.text
+    assert "secret-value" not in caplog.text
+
+
+@pytest.mark.parametrize("codec", [MsgPackCodec(), BSONCodec()])
+def test_round_trip_with_types_no_native_to_the_format(codec):
     class Event(BaseModel):
         at: datetime
         tags: set[str]
@@ -171,25 +264,3 @@ async def test_decode_error_reason_is_never_empty():
 
     await _deliver(mqtt, "topic", b"\xc1")
     assert errors[0].errors()[0]["ctx"]["reason"] != ""
-
-
-async def test_custom_codec_with_loads_and_dumps(monkeypatch):
-    mqtt = FastMQTT(config=MQTTConfig(), codec=UpperJSONCodec())
-    received = []
-
-    @mqtt.subscribe("topic")
-    async def handler(item: MyItem):
-        received.append(item)
-
-    await _deliver(mqtt, "topic", b'{"value":3}')
-    sent = _capture_publish(mqtt, monkeypatch)
-    mqtt.publish("topic", MyItem(value=4))
-
-    assert received == [MyItem(value=3)]
-    assert sent == [b'{"VALUE":4}']
-
-
-@pytest.mark.parametrize("method", ["loads", "dumps"])
-def test_base_codec_methods_must_be_implemented(method):
-    with pytest.raises(NotImplementedError):
-        getattr(Codec(), method)(b"")

@@ -33,3 +33,4 @@ repos:
           - pydantic
           - gmqtt
           - msgpack
+          - pymongo
