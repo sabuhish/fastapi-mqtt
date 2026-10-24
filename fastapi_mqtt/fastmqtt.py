@@ -10,6 +10,7 @@ from gmqtt import Message, Subscription
 from gmqtt.mqtt.constants import MQTTv50
 from pydantic import BaseModel, ValidationError
 
+from .codecs import Codec, JSONCodec
 from .config import MQTTConfig
 from .handlers import (
     MQTTConnectionHandler,
@@ -59,6 +60,7 @@ class FastMQTT:
         clean_session: bool = True,
         optimistic_acknowledgement: bool = True,
         mqtt_logger: Optional[logging.Logger] = None,
+        codec: Optional[Codec] = None,
         **kwargs: Any,
     ) -> None:
         if not client_id:
@@ -86,6 +88,7 @@ class FastMQTT:
         self.mqtt_handlers = MQTTHandlers(self.client, self._logger)
         # CONNACK args of the last successful connection, to call late `on_connect` handlers
         self._connack: Optional[Tuple[int, int, Any]] = None
+        self.codec: Codec = codec or JSONCodec()
 
         if (
             self.config.will_message_topic
@@ -206,6 +209,7 @@ class FastMQTT:
         payload: Any = None,
         qos: int = 0,
         retain: bool = False,
+        codec: Optional[Codec] = None,
         **kwargs,
     ) -> None:
         """
@@ -220,7 +224,7 @@ class FastMQTT:
         retain:
         """
         if isinstance(payload, BaseModel):
-            payload = payload.model_dump_json()
+            payload = (codec or self.codec).encode(payload)
         return self.client.publish(
             message_or_topic, payload=payload, qos=qos, retain=retain, **kwargs
         )
@@ -263,7 +267,7 @@ class FastMQTT:
         async def shutdown() -> None:
             await self.mqtt_shutdown()
 
-    def _message_handler(self, handler: Callable[..., Any]) -> MQTTMessageHandler:
+    def _message_handler(self, handler: Callable[..., Any], codec: Codec) -> MQTTMessageHandler:
         """
         Adapt a subscription handler to the generic message handler call.
 
@@ -283,7 +287,7 @@ class FastMQTT:
             client: MQTTClient, topic: str, payload: bytes, qos: int, properties: Any
         ) -> Any:
             try:
-                item = model.model_validate_json(payload)
+                item = codec.decode(model=model, payload=payload)
             except ValidationError as error:
                 await self._payload_error(handler, client, topic, payload, error)
                 return None
@@ -327,6 +331,7 @@ class FastMQTT:
         retain_as_published: bool = False,
         retain_handling_options: int = 0,
         subscription_identifier: Any = None,
+        codec: Optional[Codec] = None,
     ) -> Callable[..., Any]:
         """
         Decorator method used to subscribe for specific topics.
@@ -344,7 +349,7 @@ class FastMQTT:
 
         def subscribe_handler(handler: MQTTMessageHandler) -> MQTTMessageHandler:
             self._logger.debug("Subscribe for topics: %s", topics)
-            message_handler = self._message_handler(handler)
+            message_handler = self._message_handler(handler, codec or self.codec)
             for topic in topics:
                 if topic not in self.subscriptions:
                     subscription = Subscription(

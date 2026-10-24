@@ -32,3 +32,5 @@ repos:
         additional_dependencies:
           - pydantic
           - gmqtt
+          - msgpack
+          - pymongo
